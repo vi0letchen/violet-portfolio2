@@ -1,25 +1,58 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useHScroll } from "./HScrollContext";
 
 const navLinks = [
-  { label: "About", href: "#about" },
-  { label: "Experience", href: "#experience" },
-  { label: "Projects", href: "#projects" },
-  { label: "Skills", href: "#skills" },
-  { label: "Contact", href: "#contact" },
+  { label: "About",      id: "about" },
+  { label: "Experience", id: "experience" },
+  { label: "Projects",   id: "projects" },
+  { label: "Skills",     id: "skills" },
+  { label: "Contact",    id: "contact" },
 ];
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled]   = useState(false);
+  const [menuOpen, setMenuOpen]   = useState(false);
+  const { isHorizontal, scrollToSection } = useHScroll();
 
+  /* Detect when the hero panel leaves the viewport (works for both axes) */
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    // Wait one tick so the hero section is in the DOM
+    const timer = setTimeout(() => {
+      const hero = document.getElementById("hero");
+      if (!hero) return;
+
+      const observer = new IntersectionObserver(
+        ([entry]) => setScrolled(!entry.isIntersecting),
+        { threshold: 0 }
+      );
+      observer.observe(hero);
+      return () => observer.disconnect();
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, []);
+
+  const scrollTo = useCallback(
+    (id: string) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      if (isHorizontal) {
+        scrollToSection(id);
+      } else {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    },
+    [isHorizontal, scrollToSection]
+  );
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    scrollTo("hero");
+  };
 
   return (
     <motion.header
@@ -33,6 +66,7 @@ export default function Navbar() {
       <nav className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
         <motion.a
           href="#"
+          onClick={handleLogoClick}
           className="text-lg font-semibold tracking-tight gradient-text"
           whileHover={{ scale: 1.03 }}
         >
@@ -43,17 +77,17 @@ export default function Navbar() {
         <ul className="hidden md:flex items-center gap-8">
           {navLinks.map((link, i) => (
             <motion.li
-              key={link.href}
+              key={link.id}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 * i + 0.3 }}
             >
-              <a
-                href={link.href}
-                className="text-sm text-[#94a3b8] hover:text-[#a78bfa] transition-colors duration-200 font-medium"
+              <button
+                onClick={() => scrollTo(link.id)}
+                className="text-sm text-[#94a3b8] hover:text-[#a78bfa] transition-colors duration-200 font-medium cursor-pointer"
               >
                 {link.label}
-              </a>
+              </button>
             </motion.li>
           ))}
         </ul>
@@ -88,14 +122,16 @@ export default function Navbar() {
           >
             <ul className="flex flex-col px-6 py-4 gap-4">
               {navLinks.map((link) => (
-                <li key={link.href}>
-                  <a
-                    href={link.href}
-                    className="text-sm text-[#94a3b8] hover:text-[#a78bfa] transition-colors"
-                    onClick={() => setMenuOpen(false)}
+                <li key={link.id}>
+                  <button
+                    onClick={() => {
+                      scrollTo(link.id);
+                      setMenuOpen(false);
+                    }}
+                    className="text-sm text-[#94a3b8] hover:text-[#a78bfa] transition-colors cursor-pointer"
                   >
                     {link.label}
-                  </a>
+                  </button>
                 </li>
               ))}
             </ul>

@@ -1,3 +1,5 @@
+import HScrollProvider from "@/components/HScrollProvider";
+import HorizontalScroller from "@/components/HorizontalScroller";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
@@ -9,15 +11,23 @@ import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
+    /*
+     * HScrollProvider wraps everything so both Navbar and inner sections
+     * can read `containerRef` and `isHorizontal` from context.
+     */
+    <HScrollProvider>
       <Navbar />
-      <Hero />
-      <About />
-      <Experience />
-      <Projects />
-      <Skills />
-      <Contact />
-      <Footer />
-    </main>
+      <main>
+        <HorizontalScroller>
+          <Hero />
+          <About />
+          <Experience />
+          <Projects />
+          <Skills />
+          <Contact />
+          <Footer />
+        </HorizontalScroller>
+      </main>
+    </HScrollProvider>
   );
 }

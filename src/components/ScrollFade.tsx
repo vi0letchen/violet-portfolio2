@@ -2,6 +2,7 @@
 
 import { useRef, useEffect, ReactNode, CSSProperties } from "react";
 import { motion, useMotionValue } from "framer-motion";
+import { useHScroll } from "./HScrollContext";
 
 interface Props {
   children: ReactNode;
@@ -12,7 +13,6 @@ interface Props {
 
 /**
  * Smoothstep easing: slow at edges, fast in the middle.
- * Gives a "snap into view" feel rather than a gradual linear fade.
  */
 function smoothstep(t: number): number {
   const c = Math.max(0, Math.min(1, t));
@@ -22,14 +22,16 @@ function smoothstep(t: number): number {
 /**
  * Scroll-driven fade + scale.
  *
- * The viewport is split into thirds based on the element's center point:
- *   - Bottom third  (entering): opacity 0→1, scale 0.85→1
- *   - Middle third  (visible) : opacity 1,   scale 1
- *   - Top third     (exiting) : opacity 1→0, scale 1→0.85
+ * Vertical mode (mobile / default):
+ *   Tracks window scroll. Element center position relative to viewport height.
+ *   Animates opacity, scale, and Y offset.
  *
- * Values are recalculated on every scroll tick via rAF.
- * No CSS transitions — motion values are set directly so they
- * track scroll position in real time.
+ * Horizontal mode (desktop):
+ *   Tracks the HorizontalScroller container's scroll.
+ *   Element center position relative to viewport width.
+ *   Animates opacity, scale, and X offset.
+ *   Entering from right → positive x offset fades to 0.
+ *   Exiting to left → negative x offset fades to 0.
  */
 export default function ScrollFade({
   children,
@@ -41,6 +43,9 @@ export default function ScrollFade({
   const opacityMV = useMotionValue(0);
   const scaleMV   = useMotionValue(0.85);
   const yMV       = useMotionValue(yOffset);
+  const xMV       = useMotionValue(yOffset); // same magnitude, X axis
+
+  const { containerRef, isHorizontal } = useHScroll();
 
   useEffect(() => {
     const el = ref.current;
@@ -48,60 +53,99 @@ export default function ScrollFade({
 
     let rafId: number;
 
-    const compute = () => {
+    const computeVertical = () => {
       const rect = el.getBoundingClientRect();
       const vh   = window.innerHeight;
-
-      // Normalised position of element center within viewport (0 = top, 1 = bottom)
-      const pos = (rect.top + rect.height / 2) / vh;
-
-      // Fade zone: only the outer 15% on each edge triggers the effect.
-      // Elements are fully visible across the central 70% of the viewport.
+      const pos  = (rect.top + rect.height / 2) / vh;
       const edge = 0.30;
 
       let raw: number;
       if (pos <= 0 || pos >= 1) {
-        raw = 0; // fully off-screen
+        raw = 0;
       } else if (pos < edge) {
-        // Exiting at top
-        raw = pos / edge;
+        raw = pos / edge;          // exiting top
       } else if (pos > 1 - edge) {
-        // Entering from bottom
-        raw = (1 - pos) / edge;
+        raw = (1 - pos) / edge;    // entering bottom
       } else {
-        // Fully visible zone (middle 70%)
         raw = 1;
       }
 
-      // Smoothstep so the fade feels snappy rather than linear
       const t = smoothstep(raw);
-
       opacityMV.set(t);
       scaleMV.set(0.93 + 0.07 * t);
       yMV.set(yOffset * (1 - t));
+      xMV.set(0);
+    };
+
+    const computeHorizontal = () => {
+      const rect = el.getBoundingClientRect();
+      const vw   = window.innerWidth;
+      const pos  = (rect.left + rect.width / 2) / vw;
+      const edge = 0.30;
+
+      let opacity: number;
+      let scale: number;
+      let x: number;
+
+      if (pos <= 0 || pos >= 1) {
+        opacity = 0; scale = 0.93; x = 0;
+      } else if (pos < edge) {
+        // Exiting to the left — slide left & fade
+        const t = smoothstep(pos / edge);
+        opacity = t;
+        scale   = 0.93 + 0.07 * t;
+        x       = -yOffset * (1 - t);
+      } else if (pos > 1 - edge) {
+        // Entering from the right — slide in from right & fade
+        const t = smoothstep((1 - pos) / edge);
+        opacity = t;
+        scale   = 0.93 + 0.07 * t;
+        x       = yOffset * (1 - t);
+      } else {
+        opacity = 1; scale = 1; x = 0;
+      }
+
+      opacityMV.set(opacity);
+      scaleMV.set(scale);
+      xMV.set(x);
+      yMV.set(0);
     };
 
     const onScroll = () => {
       cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(compute);
+      rafId = requestAnimationFrame(isHorizontal ? computeHorizontal : computeVertical);
     };
 
-    window.addEventListener("scroll", onScroll, { passive: true });
+    const scrollTarget = isHorizontal ? containerRef.current : window;
+
+    if (!scrollTarget) {
+      // Container not yet mounted — fall back to vertical until it is
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll, { passive: true });
+      computeVertical();
+      return () => {
+        window.removeEventListener("scroll", onScroll);
+        window.removeEventListener("resize", onScroll);
+        cancelAnimationFrame(rafId);
+      };
+    }
+
+    scrollTarget.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll, { passive: true });
-    compute(); // run immediately so elements already in view appear correctly
+    (isHorizontal ? computeHorizontal : computeVertical)();
 
     return () => {
-      window.removeEventListener("scroll", onScroll);
+      scrollTarget.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       cancelAnimationFrame(rafId);
     };
-  }, [opacityMV, scaleMV, yMV, yOffset]);
+  }, [opacityMV, scaleMV, yMV, xMV, yOffset, isHorizontal, containerRef]);
 
   return (
     <motion.div
       ref={ref}
       className={className}
-      style={{ opacity: opacityMV, scale: scaleMV, y: yMV, ...style }}
+      style={{ opacity: opacityMV, scale: scaleMV, y: yMV, x: xMV, ...style }}
     >
       {children}
     </motion.div>

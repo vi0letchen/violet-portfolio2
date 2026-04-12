@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import { useHScroll } from "./HScrollContext";
 
 const roles = ["Full-Stack Developer", "Next.js Engineer", "TypeScript Enthusiast"];
 
@@ -47,9 +48,20 @@ const itemVariants = {
 
 export default function Hero() {
   const role = useTypewriter(roles);
+  const { isHorizontal } = useHScroll();
+
+  const scrollToNext = () => {
+    const about = document.getElementById("about");
+    if (!about) return;
+    if (isHorizontal) {
+      about.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
+    } else {
+      about.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section id="hero" className="relative h-screen w-screen flex items-center justify-center overflow-hidden">
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -90,18 +102,30 @@ export default function Hero() {
 
         {/* CTA buttons */}
         <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-4 mb-12">
-          <a
-            href="#projects"
-            className="px-6 py-3 rounded-xl bg-[#7c6af7] hover:bg-[#6d5ce6] text-white text-sm font-semibold transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-[#7c6af7]/30"
+          <button
+            onClick={() => {
+              const el = document.getElementById("projects");
+              if (!el) return;
+              isHorizontal
+                ? el.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" })
+                : el.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+            className="px-6 py-3 rounded-xl bg-[#7c6af7] hover:bg-[#6d5ce6] text-white text-sm font-semibold transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-[#7c6af7]/30 cursor-pointer"
           >
             View Projects
-          </a>
-          <a
-            href="#contact"
-            className="px-6 py-3 rounded-xl border border-[#1e1e2e] hover:border-[#7c6af7]/50 text-[#94a3b8] hover:text-[#a78bfa] text-sm font-semibold transition-all duration-200 hover:scale-105 glass"
+          </button>
+          <button
+            onClick={() => {
+              const el = document.getElementById("contact");
+              if (!el) return;
+              isHorizontal
+                ? el.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" })
+                : el.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+            className="px-6 py-3 rounded-xl border border-[#1e1e2e] hover:border-[#7c6af7]/50 text-[#94a3b8] hover:text-[#a78bfa] text-sm font-semibold transition-all duration-200 hover:scale-105 glass cursor-pointer"
           >
             Get in Touch
-          </a>
+          </button>
         </motion.div>
 
         {/* Social links */}
@@ -160,20 +184,33 @@ export default function Hero() {
         </motion.div>
       </motion.div>
 
-      {/* Scroll indicator */}
-      <motion.div
+      {/* Scroll indicator — vertical on mobile, horizontal on desktop */}
+      <motion.button
+        onClick={scrollToNext}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer group md:bottom-auto md:right-8 md:left-auto md:translate-x-0 md:top-1/2 md:-translate-y-1/2 md:flex-row"
+        aria-label="Scroll to next section"
       >
-        <span className="text-xs text-[#6b7280] tracking-widest uppercase">Scroll</span>
+        <span className="text-xs text-[#6b7280] tracking-widest uppercase group-hover:text-[#a78bfa] transition-colors">
+          Scroll
+        </span>
+
+        {/* Vertical indicator (mobile) */}
         <motion.div
           animate={{ y: [0, 8, 0] }}
           transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-          className="w-0.5 h-8 bg-gradient-to-b from-[#7c6af7] to-transparent rounded-full"
+          className="w-0.5 h-8 bg-gradient-to-b from-[#7c6af7] to-transparent rounded-full md:hidden"
         />
-      </motion.div>
+
+        {/* Horizontal indicator (desktop) */}
+        <motion.div
+          animate={{ x: [0, 8, 0] }}
+          transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+          className="hidden md:block h-0.5 w-8 bg-gradient-to-r from-[#7c6af7] to-transparent rounded-full"
+        />
+      </motion.button>
     </section>
   );
 }
