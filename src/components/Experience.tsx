@@ -1,9 +1,9 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { motion } from "framer-motion";
 import SectionWrapper from "./SectionWrapper";
 import SectionHeading from "./SectionHeading";
+import ScrollFade from "./ScrollFade";
 
 const experiences = [
   {
@@ -31,9 +31,6 @@ const experiences = [
 ];
 
 export default function Experience() {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
-
   return (
     <SectionWrapper id="experience">
       <SectionHeading
@@ -42,26 +39,20 @@ export default function Experience() {
         subtitle="Building real things, solving real problems."
       />
 
-      <div ref={ref} className="relative">
+      <div className="relative">
         {/* Timeline line */}
         <div className="absolute left-4 top-0 bottom-0 w-px bg-gradient-to-b from-[#7c6af7]/60 via-[#7c6af7]/20 to-transparent hidden sm:block" />
 
         <div className="flex flex-col gap-10">
-          {experiences.map((exp, i) => (
-            <motion.div
-              key={exp.role + exp.period}
-              initial={{ opacity: 0, x: -24 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ delay: i * 0.18, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="relative sm:pl-12"
-            >
-              {/* Dot */}
-              <div className="hidden sm:flex absolute left-0 top-6 w-8 h-8 items-center justify-center">
+          {experiences.map((exp) => (
+            <ScrollFade key={exp.role + exp.period} className="relative sm:pl-12">
+              {/* Timeline dot */}
+              <div className="hidden sm:flex absolute left-[-3rem] top-6 w-8 h-8 items-center justify-center">
                 <div
                   className={`w-3 h-3 rounded-full border-2 ${
                     exp.current
                       ? "bg-[#7c6af7] border-[#7c6af7] shadow-[0_0_12px_rgba(124,106,247,0.6)]"
-                      : "bg-[#1e1e2e] border-[#3d3d5e]"
+                      : "bg-[#1a1a28] border-[#3d3d5e]"
                   }`}
                 />
               </div>
@@ -99,14 +90,14 @@ export default function Experience() {
                   {exp.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="px-3 py-1 rounded-lg text-xs font-medium bg-[#1e1e2e] text-[#6b7280] border border-[#2a2a40]"
+                      className="px-3 py-1 rounded-lg text-xs font-medium bg-[#12121e] text-[#6b7280] border border-[#2a2a40]"
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
               </motion.div>
-            </motion.div>
+            </ScrollFade>
           ))}
         </div>
       </div>

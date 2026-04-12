@@ -1,9 +1,7 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { motion } from "framer-motion";
 import SectionWrapper from "./SectionWrapper";
-import SectionHeading from "./SectionHeading";
 
 const contacts = [
   {
@@ -40,33 +38,27 @@ const contacts = [
 ];
 
 export default function Contact() {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
-
   return (
     <SectionWrapper id="contact">
-      <div className="max-w-2xl mx-auto text-center" ref={ref}>
-        <SectionHeading label="05 — Contact" title="Let's work together." />
+      <div className="max-w-2xl mx-auto text-center">
+        <div className="mb-16">
+          <span className="inline-block text-xs font-semibold tracking-[0.2em] uppercase text-[#7c6af7] mb-3">
+            05 — Contact
+          </span>
+          <h2 className="text-4xl sm:text-5xl font-bold text-[#e2e8f0] leading-tight mb-4">
+            Let&apos;s work together.
+          </h2>
+        </div>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.1, duration: 0.55 }}
-          className="text-[#94a3b8] text-base leading-relaxed mb-12"
-        >
+        <p className="text-[#94a3b8] text-base leading-relaxed mb-12">
           Whether you&apos;re looking for a developer, want to collaborate on a project, or just
           want to say hi — my inbox is always open.
-        </motion.p>
+        </p>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.2, duration: 0.55 }}
-          className="flex flex-col sm:flex-row justify-center gap-4 mb-12"
-        >
+        <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
           <a
             href="mailto:violetchenbusiness@gmail.com"
-            className="px-8 py-4 rounded-xl bg-[#7c6af7] hover:bg-[#6d5ce6] text-white font-semibold transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-[#7c6af7]/30"
+            className="px-8 py-4 rounded-xl bg-[#7c6af7] hover:bg-[#6d5ce6] text-white font-semibold transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-[#7c6af7]/30 cursor-pointer"
           >
             Say Hello
           </a>
@@ -74,24 +66,21 @@ export default function Contact() {
             href="https://github.com/vi0letchen"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-8 py-4 rounded-xl border border-[#1e1e2e] hover:border-[#7c6af7]/50 text-[#94a3b8] hover:text-[#a78bfa] font-semibold transition-all duration-200 hover:scale-105 glass"
+            className="px-8 py-4 rounded-xl border border-[#1e1e2e] hover:border-[#7c6af7]/50 text-[#94a3b8] hover:text-[#a78bfa] font-semibold transition-all duration-200 hover:scale-105 glass cursor-pointer"
           >
             See My Work
           </a>
-        </motion.div>
+        </div>
 
         <div className="flex flex-col sm:flex-row justify-center gap-4">
-          {contacts.map((c, i) => (
+          {contacts.map((c) => (
             <motion.a
               key={c.label}
               href={c.href}
               target={c.href.startsWith("mailto") ? undefined : "_blank"}
               rel="noopener noreferrer"
-              initial={{ opacity: 0, y: 16 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
               whileHover={{ scale: 1.04, borderColor: "rgba(124,106,247,0.4)" }}
-              className="flex items-center gap-3 px-5 py-3 rounded-xl border border-[#1e1e2e] glass text-[#6b7280] hover:text-[#a78bfa] transition-colors text-sm"
+              className="flex items-center gap-3 px-5 py-3 rounded-xl border border-[#1e1e2e] glass text-[#6b7280] hover:text-[#a78bfa] transition-colors text-sm cursor-pointer"
             >
               <span className="text-[#7c6af7]">{c.icon}</span>
               <span>{c.value}</span>

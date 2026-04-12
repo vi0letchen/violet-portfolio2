@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import AnimatedBackground from "@/components/AnimatedBackground";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,8 +29,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${inter.variable} antialiased bg-[#0a0a0f] text-[#e2e8f0]`}>
-        {children}
+      <body className={`${inter.variable} antialiased bg-black text-[#e2e8f0]`}>
+        <AnimatedBackground />
+        <div className="relative" style={{ zIndex: 10 }}>
+          {children}
+        </div>
       </body>
     </html>
   );

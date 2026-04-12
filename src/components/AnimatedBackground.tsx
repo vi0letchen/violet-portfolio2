@@ -2,13 +2,15 @@
 
 import { useEffect, useRef } from "react";
 
-interface Particle {
+interface ShootingStar {
   x: number;
   y: number;
   vx: number;
   vy: number;
-  radius: number;
-  opacity: number;
+  len: number;       // trail length in px
+  life: number;      // frames lived
+  maxLife: number;   // total lifespan in frames
+  maxOpacity: number;
 }
 
 export default function AnimatedBackground() {
@@ -21,59 +23,107 @@ export default function AnimatedBackground() {
     if (!ctx) return;
 
     let animId: number;
-    const particles: Particle[] = [];
-    const COUNT = 80;
-    const MAX_DIST = 140;
+    const stars: ShootingStar[] = [];
+    let frame = 0;
+    // Random interval: spawn a star every 140–280 frames (~2.3–4.7s at 60fps)
+    let nextSpawn = 120 + Math.floor(Math.random() * 140);
 
     const resize = () => {
       canvas.width = window.innerWidth;
-      canvas.height = document.documentElement.scrollHeight;
+      canvas.height = window.innerHeight;
     };
     resize();
     window.addEventListener("resize", resize);
 
-    for (let i = 0; i < COUNT; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.35,
-        vy: (Math.random() - 0.5) * 0.35,
-        radius: Math.random() * 2 + 0.8,
-        opacity: Math.random() * 0.6 + 0.25,
+    const spawnStar = () => {
+      // Angle: 28–52 degrees (roughly diagonal top-left → bottom-right)
+      const angleDeg = 28 + Math.random() * 24;
+      const angle = angleDeg * (Math.PI / 180);
+      const speed = 7 + Math.random() * 5;
+
+      // Start: either along the top edge or along the left edge
+      const fromTop = Math.random() > 0.35;
+      const x = fromTop
+        ? Math.random() * canvas.width * 0.85
+        : -(Math.random() * 60);
+      const y = fromTop
+        ? -(Math.random() * 40)
+        : Math.random() * canvas.height * 0.55;
+
+      stars.push({
+        x,
+        y,
+        vx: speed * Math.cos(angle),
+        vy: speed * Math.sin(angle),
+        len: 100 + Math.random() * 140,
+        life: 0,
+        maxLife: 55 + Math.floor(Math.random() * 40),
+        maxOpacity: 0.55 + Math.random() * 0.45,
       });
-    }
+    };
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Update & draw particles
-      for (const p of particles) {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(167, 139, 250, ${p.opacity})`;
-        ctx.fill();
+      frame++;
+      if (frame >= nextSpawn) {
+        spawnStar();
+        nextSpawn = frame + 140 + Math.floor(Math.random() * 140);
       }
 
-      // Draw connections
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < MAX_DIST) {
-            const alpha = (1 - dist / MAX_DIST) * 0.28;
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(124, 106, 247, ${alpha})`;
-            ctx.lineWidth = 0.8;
-            ctx.stroke();
-          }
+      for (let i = stars.length - 1; i >= 0; i--) {
+        const s = stars[i];
+        s.x += s.vx;
+        s.y += s.vy;
+        s.life++;
+
+        const t = s.life / s.maxLife;
+        // Fade in first 15%, full for middle 70%, fade out last 15%
+        let alpha: number;
+        if (t < 0.15) {
+          alpha = (t / 0.15) * s.maxOpacity;
+        } else if (t > 0.85) {
+          alpha = ((1 - t) / 0.15) * s.maxOpacity;
+        } else {
+          alpha = s.maxOpacity;
+        }
+
+        // Tail origin (behind head along velocity direction)
+        const spd = Math.sqrt(s.vx * s.vx + s.vy * s.vy);
+        const tx = s.x - (s.vx / spd) * s.len;
+        const ty = s.y - (s.vy / spd) * s.len;
+
+        // Gradient trail: transparent tail → violet mid → white head
+        const grad = ctx.createLinearGradient(tx, ty, s.x, s.y);
+        grad.addColorStop(0, `rgba(124, 106, 247, 0)`);
+        grad.addColorStop(0.45, `rgba(180, 160, 255, ${alpha * 0.45})`);
+        grad.addColorStop(0.8, `rgba(220, 210, 255, ${alpha * 0.75})`);
+        grad.addColorStop(1, `rgba(255, 255, 255, ${alpha})`);
+
+        ctx.beginPath();
+        ctx.moveTo(tx, ty);
+        ctx.lineTo(s.x, s.y);
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 1.8;
+        ctx.lineCap = "round";
+        ctx.stroke();
+
+        // Bright head glow
+        const headGlow = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, 4);
+        headGlow.addColorStop(0, `rgba(255, 255, 255, ${alpha})`);
+        headGlow.addColorStop(1, `rgba(200, 180, 255, 0)`);
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = headGlow;
+        ctx.fill();
+
+        // Remove off-screen or expired stars
+        if (
+          s.life > s.maxLife ||
+          s.x > canvas.width + 200 ||
+          s.y > canvas.height + 200
+        ) {
+          stars.splice(i, 1);
         }
       }
 
@@ -89,79 +139,47 @@ export default function AnimatedBackground() {
 
   return (
     <>
-      {/* Aurora gradient orbs — CSS animated, covers full page */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden>
-        {/* Orb 1 — top left */}
-        <div
-          className="absolute rounded-full"
-          style={{
-            width: "60vw",
-            height: "60vw",
-            top: "-15vw",
-            left: "-15vw",
-            background: "radial-gradient(circle, rgba(124,106,247,0.18) 0%, transparent 70%)",
-            animation: "orb1 18s ease-in-out infinite alternate",
-          }}
-        />
-        {/* Orb 2 — bottom right */}
-        <div
-          className="absolute rounded-full"
-          style={{
-            width: "55vw",
-            height: "55vw",
-            bottom: "-10vw",
-            right: "-10vw",
-            background: "radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)",
-            animation: "orb2 22s ease-in-out infinite alternate",
-          }}
-        />
-        {/* Orb 3 — center */}
-        <div
-          className="absolute rounded-full"
-          style={{
-            width: "40vw",
-            height: "40vw",
-            top: "35%",
-            left: "30%",
-            background: "radial-gradient(circle, rgba(167,139,250,0.1) 0%, transparent 70%)",
-            animation: "orb3 26s ease-in-out infinite alternate",
-          }}
-        />
-        {/* Subtle noise grain overlay */}
-        <div
-          className="absolute inset-0 opacity-[0.025]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-            backgroundRepeat: "repeat",
-            backgroundSize: "200px",
-          }}
-        />
-      </div>
+      {/* Obsidian Halo — single large radial glow, slightly below center */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        aria-hidden
+        style={{
+          zIndex: 1,
+          background:
+            "radial-gradient(ellipse 90% 65% at 50% 63%, rgba(109,92,230,0.32) 0%, rgba(99,102,241,0.14) 38%, rgba(80,50,180,0.05) 62%, transparent 75%)",
+          animation: "haloPulse 7s ease-in-out infinite",
+        }}
+      />
 
-      {/* Particle canvas — scrolls with page */}
+      {/* Subtle vignette to keep edges dark */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        aria-hidden
+        style={{
+          zIndex: 2,
+          background:
+            "radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(0,0,0,0.5) 100%)",
+        }}
+      />
+
+      {/* Shooting star canvas — fixed viewport */}
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 pointer-events-none"
-        style={{ zIndex: 0 }}
+        className="fixed inset-0 pointer-events-none"
+        style={{ zIndex: 3 }}
         aria-hidden
       />
 
       <style>{`
-        @keyframes orb1 {
-          0%   { transform: translate(0, 0) scale(1); }
-          33%  { transform: translate(6vw, 4vw) scale(1.08); }
-          66%  { transform: translate(-4vw, 8vw) scale(0.95); }
-          100% { transform: translate(3vw, -3vw) scale(1.04); }
-        }
-        @keyframes orb2 {
-          0%   { transform: translate(0, 0) scale(1); }
-          40%  { transform: translate(-8vw, -5vw) scale(1.1); }
-          100% { transform: translate(4vw, 6vw) scale(0.92); }
-        }
-        @keyframes orb3 {
-          0%   { transform: translate(0, 0) scale(1); }
-          50%  { transform: translate(-6vw, 5vw) scale(1.12); }
-          100% { transform: translate(5vw, -4vw) scale(0.96); }
+        @keyframes haloPulse {
+          0%, 100% {
+            opacity: 0.82;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1.045);
+          }
         }
       `}</style>
     </>
