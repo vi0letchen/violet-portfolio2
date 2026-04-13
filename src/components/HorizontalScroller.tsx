@@ -136,8 +136,21 @@ export default function HorizontalScroller({ children }: Props) {
     if (!el) return;
 
     const onScroll = () => {
-      const idx = Math.round(el.scrollLeft / window.innerWidth);
-      setCurrentPanel(Math.max(0, Math.min(panelCount - 1, idx)));
+      const panels = Array.from(el.children) as HTMLElement[];
+      if (!panels.length) return;
+
+      let nearestIdx = 0;
+      let nearestDist = Math.abs(el.scrollLeft - panels[0].offsetLeft);
+
+      for (let i = 1; i < panels.length; i += 1) {
+        const dist = Math.abs(el.scrollLeft - panels[i].offsetLeft);
+        if (dist < nearestDist) {
+          nearestDist = dist;
+          nearestIdx = i;
+        }
+      }
+
+      setCurrentPanel(nearestIdx);
     };
 
     el.addEventListener("scroll", onScroll, { passive: true });
@@ -160,6 +173,9 @@ export default function HorizontalScroller({ children }: Props) {
           <div
             key={i}
             className="w-full md:w-auto md:flex-shrink-0 md:h-screen md:overflow-y-auto"
+            style={{
+              marginRight: i >= 1 && i <= 4 ? "10vw" : 0,
+            }}
           >
             {child}
           </div>

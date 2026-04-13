@@ -235,7 +235,7 @@ export default function Projects() {
       <div className="hidden md:flex flex-row h-screen items-stretch">
 
         {/* ── Title column ──────────────────────────────────────────── */}
-        <div className="flex-shrink-0 w-[24vw] flex flex-col justify-center pl-16 pr-12 border-r border-white/[0.05]">
+        <div className="flex-shrink-0 w-[24vw] flex flex-col justify-center pl-16 pr-12">
           <ScrollFade yOffset={20}>
             <span className="inline-block text-xs font-semibold tracking-[0.2em] uppercase text-[#7c6af7] mb-3">
               03 — Projects
@@ -256,22 +256,37 @@ export default function Projects() {
         {/* ── Live projects — three cards in a row ──────────────────── */}
         <div className="flex flex-row items-center gap-5 px-10 py-10">
           {mainProjects.map((project) => (
-            <div key={project.title} className="flex-shrink-0 w-[23vw] h-full py-2 flex flex-col">
+            <div key={project.title} className="flex-shrink-0 w-[23vw] h-[50vh] py-2 flex flex-col">
               <BrowserCard project={project} />
             </div>
           ))}
         </div>
 
-        {/* ── Thin separator ────────────────────────────────────────── */}
-        <div className="flex-shrink-0 w-px self-stretch my-10 bg-white/[0.05]" />
+        {/* ── Vertical "Hackathon Projects" divider ─────────────────── */}
+        <div className="flex-shrink-0 flex items-center justify-center px-6 py-10">
+          <ScrollFade yOffset={16}>
+            <div className="flex h-full flex-col items-center justify-center gap-4">
+              <div className="h-20 w-px bg-white/[0.05]" />
+              <div className="flex flex-col items-center gap-[4px]">
+                {"HACKATHON".split("").map((char, i) => (
+                  <span key={i} className="text-[12px] font-semibold tracking-widest uppercase text-[#4b5563] leading-none">
+                    {char}
+                  </span>
+                ))}
+                <span className="block h-4" />
+                {"PROJECTS".split("").map((char, i) => (
+                  <span key={i} className="text-[12px] font-semibold tracking-widest uppercase text-[#4b5563] leading-none">
+                    {char}
+                  </span>
+                ))}
+              </div>
+              <div className="h-20 w-px bg-white/[0.05]" />
+            </div>
+          </ScrollFade>
+        </div>
 
         {/* ── Hackathon — two cards stacked top & bottom ────────────── */}
-        <div className="flex-shrink-0 w-[22vw] flex flex-col justify-center gap-5 px-8 py-10">
-          <ScrollFade yOffset={16}>
-            <p className="text-xs font-semibold tracking-[0.2em] uppercase text-[#4b5563] mb-1">
-              Hackathon Projects
-            </p>
-          </ScrollFade>
+        <div className="flex-shrink-0 w-[26vw] flex flex-col justify-center gap-6 pl-8 pr-10 py-10">
           {hackathonProjects.map((project) => (
             <HackathonCard key={project.title} project={project} />
           ))}
