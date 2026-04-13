@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import SectionWrapper from "./SectionWrapper";
 import ScrollFade from "./ScrollFade";
+import MagneticText from "./MagneticText";
 
 const strengths = [
   { icon: "⚡", label: "Fast Learning" },
@@ -25,9 +26,9 @@ export default function About() {
             </span>
           </ScrollFade>
           <ScrollFade yOffset={24}>
-            <h2 className="text-4xl xl:text-5xl font-bold text-[#e2e8f0] leading-tight">
+            <MagneticText className="text-4xl xl:text-5xl font-bold text-[#e2e8f0] leading-tight">
               Building things that matter.
-            </h2>
+            </MagneticText>
           </ScrollFade>
         </div>
 

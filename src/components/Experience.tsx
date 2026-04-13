@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import SectionWrapper from "./SectionWrapper";
 import ScrollFade from "./ScrollFade";
+import MagneticText from "./MagneticText";
+import { SkillSpan } from "./SkillPreview";
 
 const experiences = [
   {
@@ -79,12 +81,13 @@ function ExpCard({
         {/* Tags */}
         <div className="flex flex-wrap gap-1.5 pt-4 border-t border-[#1e1e2e]">
           {exp.tags.map((tag) => (
-            <span
+            <SkillSpan
               key={tag}
+              skill={tag}
               className="px-2.5 py-0.5 rounded-lg text-xs font-medium bg-[#12121e] text-[#6b7280] border border-[#2a2a40]"
             >
               {tag}
-            </span>
+            </SkillSpan>
           ))}
         </div>
       </motion.div>
@@ -107,9 +110,9 @@ export default function Experience() {
             </span>
           </ScrollFade>
           <ScrollFade yOffset={24}>
-            <h2 className="text-4xl xl:text-5xl font-bold text-[#e2e8f0] leading-tight mb-4">
-              Where I&apos;ve worked.
-            </h2>
+            <MagneticText className="text-4xl xl:text-5xl font-bold text-[#e2e8f0] leading-tight mb-4">
+              Where I've worked.
+            </MagneticText>
           </ScrollFade>
           <ScrollFade yOffset={20}>
             <p className="text-[#6b7280] text-base leading-relaxed">

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import AnimatedBackground from "@/components/AnimatedBackground";
+import CustomCursor from "@/components/CustomCursor";
+import { SkillPreviewProvider } from "@/components/SkillPreview";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -30,10 +32,13 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className={`${inter.variable} antialiased bg-black text-[#e2e8f0]`}>
+        <CustomCursor />
         <AnimatedBackground />
-        <div className="relative" style={{ zIndex: 10 }}>
-          {children}
-        </div>
+        <SkillPreviewProvider>
+          <div className="relative" style={{ zIndex: 10 }}>
+            {children}
+          </div>
+        </SkillPreviewProvider>
       </body>
     </html>
   );

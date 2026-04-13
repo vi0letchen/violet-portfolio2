@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import ScrollFade from "./ScrollFade";
+import MagneticText from "./MagneticText";
+import { SkillSpan } from "./SkillPreview";
 
 /* ─── Data ─────────────────────────────────────────────────────────── */
 
@@ -115,13 +117,14 @@ function BrowserCard({ project }: { project: typeof mainProjects[0] }) {
           <p className="text-xs text-[#6b7280] leading-relaxed mb-3 flex-1">{project.description}</p>
           <div className="flex flex-wrap gap-1">
             {project.tags.map((tag) => (
-              <span
+              <SkillSpan
                 key={tag}
+                skill={tag}
                 className="px-2 py-0.5 rounded-full text-[10px] font-medium border"
                 style={{ color: project.accent, borderColor: `${project.accent}35`, background: `${project.accent}0d` }}
               >
                 {tag}
-              </span>
+              </SkillSpan>
             ))}
           </div>
         </div>
@@ -166,13 +169,14 @@ function HackathonCard({ project }: { project: typeof hackathonProjects[0] }) {
 
         <div className="flex flex-wrap gap-1.5">
           {project.tags.map((tag) => (
-            <span
+            <SkillSpan
               key={tag}
+              skill={tag}
               className="px-2 py-0.5 rounded-full text-[10px] font-medium border"
               style={{ color: project.accent, borderColor: `${project.accent}30`, background: `${project.accent}0d` }}
             >
               {tag}
-            </span>
+            </SkillSpan>
           ))}
         </div>
       </motion.div>
@@ -242,9 +246,9 @@ export default function Projects() {
             </span>
           </ScrollFade>
           <ScrollFade yOffset={24}>
-            <h2 className="text-4xl xl:text-5xl font-bold text-[#e2e8f0] leading-tight mb-4">
-              Things I&apos;ve built.
-            </h2>
+            <MagneticText className="text-4xl xl:text-5xl font-bold text-[#e2e8f0] leading-tight mb-4">
+              Things I've built.
+            </MagneticText>
           </ScrollFade>
           <ScrollFade yOffset={20}>
             <p className="text-[#6b7280] text-base leading-relaxed">

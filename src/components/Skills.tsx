@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import SectionWrapper from "./SectionWrapper";
 import ScrollFade from "./ScrollFade";
+import MagneticText from "./MagneticText";
+import { SkillSpan } from "./SkillPreview";
 
 const skillCategories = [
   {
@@ -53,13 +55,14 @@ function SkillCards() {
             {/* Pills */}
             <div className="flex flex-wrap gap-1.5 flex-1 content-start">
               {cat.skills.map((skill) => (
-                <motion.span
-                  key={skill}
-                  whileHover={{ scale: 1.06, borderColor: `${cat.accent}60`, color: cat.accent }}
-                  className="inline-block px-3 py-1.5 rounded-lg text-sm font-medium text-[#94a3b8] border border-[#1e1e2e] glass cursor-default transition-colors"
-                >
-                  {skill}
-                </motion.span>
+                <SkillSpan key={skill} skill={skill}>
+                  <motion.span
+                    whileHover={{ scale: 1.06, borderColor: `${cat.accent}60`, color: cat.accent }}
+                    className="inline-block px-3 py-1.5 rounded-lg text-sm font-medium text-[#94a3b8] border border-[#1e1e2e] glass cursor-default transition-colors"
+                  >
+                    {skill}
+                  </motion.span>
+                </SkillSpan>
               ))}
             </div>
           </div>
@@ -82,9 +85,9 @@ export default function Skills() {
             </span>
           </ScrollFade>
           <ScrollFade yOffset={24}>
-            <h2 className="text-4xl xl:text-5xl font-bold text-[#e2e8f0] leading-tight mb-4">
+            <MagneticText className="text-4xl xl:text-5xl font-bold text-[#e2e8f0] leading-tight mb-4">
               What I work with.
-            </h2>
+            </MagneticText>
           </ScrollFade>
           <ScrollFade yOffset={20}>
             <p className="text-[#6b7280] text-base leading-relaxed">
