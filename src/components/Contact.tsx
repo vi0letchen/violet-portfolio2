@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import SectionWrapper from "./SectionWrapper";
 import MagneticText from "./MagneticText";
-import { useHScroll } from "./HScrollContext";
+import ScrollFade from "./ScrollFade";
 
 const contacts = [
   {
@@ -39,86 +39,66 @@ const contacts = [
   },
 ];
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: (delay: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94], delay },
-  }),
-};
-
 export default function Contact() {
-  const { containerRef, isHorizontal } = useHScroll();
-  const vp = { root: isHorizontal ? containerRef : undefined, once: false, amount: 0.3 };
 
   return (
     <SectionWrapper id="contact">
       <div className="max-w-2xl mx-auto text-center">
 
-        <div className="mb-16">
-          <motion.span
-            className="inline-block text-xs font-semibold tracking-[0.2em] uppercase text-[#7c6af7] mb-3"
-            variants={fadeUp} custom={0} initial="hidden" whileInView="visible" viewport={vp}
-          >
-            05 — Contact
-          </motion.span>
-
-          <motion.div
-            variants={fadeUp} custom={0.07} initial="hidden" whileInView="visible" viewport={vp}
-          >
+        <ScrollFade yOffset={20}>
+          <div className="mb-16">
+            <span className="inline-block text-xs font-semibold tracking-[0.2em] uppercase text-[#7c6af7] mb-3">
+              05 — Contact
+            </span>
             <MagneticText className="text-4xl sm:text-5xl font-bold text-[#e2e8f0] leading-tight mb-4">
               Let's work together.
             </MagneticText>
-          </motion.div>
-        </div>
+          </div>
+        </ScrollFade>
 
-        <motion.p
-          className="text-[#94a3b8] text-base leading-relaxed mb-12"
-          variants={fadeUp} custom={0.14} initial="hidden" whileInView="visible" viewport={vp}
-        >
-          Whether you&apos;re looking for a developer, want to collaborate on a project, or just
-          want to say hi — my inbox is always open.
-        </motion.p>
+        <ScrollFade yOffset={20}>
+          <p className="text-[#94a3b8] text-base leading-relaxed mb-12">
+            Whether you&apos;re looking for a developer, want to collaborate on a project, or just
+            want to say hi — my inbox is always open.
+          </p>
+        </ScrollFade>
 
-        <motion.div
-          className="flex flex-col sm:flex-row justify-center gap-4 mb-12"
-          variants={fadeUp} custom={0.21} initial="hidden" whileInView="visible" viewport={vp}
-        >
-          <a
-            href="mailto:violetchenbusiness@gmail.com"
-            className="px-8 py-4 rounded-xl bg-[#7c6af7] hover:bg-[#6d5ce6] text-white font-semibold transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-[#7c6af7]/30 cursor-pointer"
-          >
-            Say Hello
-          </a>
-          <a
-            href="https://github.com/vi0letchen"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-8 py-4 rounded-xl border border-[#1e1e2e] hover:border-[#7c6af7]/50 text-[#94a3b8] hover:text-[#a78bfa] font-semibold transition-all duration-200 hover:scale-105 glass cursor-pointer"
-          >
-            See My Work
-          </a>
-        </motion.div>
-
-        <motion.div
-          className="flex flex-col sm:flex-row justify-center gap-4"
-          variants={fadeUp} custom={0.28} initial="hidden" whileInView="visible" viewport={vp}
-        >
-          {contacts.map((c) => (
-            <motion.a
-              key={c.label}
-              href={c.href}
-              target={c.href.startsWith("mailto") ? undefined : "_blank"}
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.04, borderColor: "rgba(124,106,247,0.4)" }}
-              className="flex items-center gap-3 px-5 py-3 rounded-xl border border-[#1e1e2e] glass text-[#6b7280] hover:text-[#a78bfa] transition-colors text-sm cursor-pointer"
+        <ScrollFade yOffset={20}>
+          <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
+            <a
+              href="mailto:violetchenbusiness@gmail.com"
+              className="px-8 py-4 rounded-xl bg-[#7c6af7] hover:bg-[#6d5ce6] text-white font-semibold transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-[#7c6af7]/30 cursor-pointer"
             >
-              <span className="text-[#7c6af7]">{c.icon}</span>
-              <span>{c.value}</span>
-            </motion.a>
-          ))}
-        </motion.div>
+              Say Hello
+            </a>
+            <a
+              href="https://github.com/vi0letchen"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-4 rounded-xl border border-[#1e1e2e] hover:border-[#7c6af7]/50 text-[#94a3b8] hover:text-[#a78bfa] font-semibold transition-all duration-200 hover:scale-105 glass cursor-pointer"
+            >
+              See My Work
+            </a>
+          </div>
+        </ScrollFade>
+
+        <ScrollFade yOffset={20}>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            {contacts.map((c) => (
+              <motion.a
+                key={c.label}
+                href={c.href}
+                target={c.href.startsWith("mailto") ? undefined : "_blank"}
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.04, borderColor: "rgba(124,106,247,0.4)" }}
+                className="flex items-center gap-3 px-5 py-3 rounded-xl border border-[#1e1e2e] glass text-[#6b7280] hover:text-[#a78bfa] transition-colors text-sm cursor-pointer"
+              >
+                <span className="text-[#7c6af7]">{c.icon}</span>
+                <span>{c.value}</span>
+              </motion.a>
+            ))}
+          </div>
+        </ScrollFade>
 
       </div>
     </SectionWrapper>

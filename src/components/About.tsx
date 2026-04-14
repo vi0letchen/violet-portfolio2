@@ -1,16 +1,18 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Zap, Users, Shuffle, Clock, ScanSearch } from "lucide-react";
 import SectionWrapper from "./SectionWrapper";
 import ScrollFade from "./ScrollFade";
 import MagneticText from "./MagneticText";
+import type { LucideIcon } from "lucide-react";
 
-const strengths = [
-  { icon: "⚡", label: "Fast Learning" },
-  { icon: "🎯", label: "Leadership" },
-  { icon: "🔄", label: "Adaptability" },
-  { icon: "⏱️", label: "Time Management" },
-  { icon: "🔍", label: "Attention to Detail" },
+const strengths: { icon: LucideIcon; color: string; label: string }[] = [
+  { icon: Zap,        color: "#facc15", label: "Fast Learning"       },
+  { icon: Users,      color: "#fb923c", label: "Leadership"          },
+  { icon: Shuffle,    color: "#34d399", label: "Adaptability"        },
+  { icon: Clock,      color: "#7c6af7", label: "Time Management"     },
+  { icon: ScanSearch, color: "#06b6d4", label: "Attention to Detail" },
 ];
 
 export default function About() {
@@ -59,13 +61,13 @@ export default function About() {
 
           {/* Strengths grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {strengths.map(({ icon, label }) => (
+            {strengths.map(({ icon: Icon, color, label }) => (
               <ScrollFade key={label}>
                 <motion.div
                   whileHover={{ scale: 1.04, borderColor: "rgba(124,106,247,0.5)" }}
                   className="flex flex-col items-center gap-3 p-5 rounded-2xl glass border border-[#1e1e2e] cursor-default transition-colors h-full"
                 >
-                  <span className="text-3xl">{icon}</span>
+                  <Icon size={28} color={color} strokeWidth={1.6} />
                   <span className="text-xs font-medium text-[#94a3b8] text-center">{label}</span>
                 </motion.div>
               </ScrollFade>
