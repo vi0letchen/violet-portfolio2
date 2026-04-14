@@ -39,26 +39,26 @@ export default function AnimatedBackground() {
       // Angle: 28–52 degrees (roughly diagonal top-left → bottom-right)
       const angleDeg = 28 + Math.random() * 24;
       const angle = angleDeg * (Math.PI / 180);
-      const speed = 7 + Math.random() * 5;
+      const speed = 10 + Math.random() * 7;
 
       // Start: either along the top edge or along the left edge
       const fromTop = Math.random() > 0.35;
       const x = fromTop
-        ? Math.random() * canvas.width * 0.85
-        : -(Math.random() * 60);
+        ? Math.random() * canvas.width * 0.7    // tighter x spread → "closer"
+        : -(Math.random() * 20);                 // less off-screen → enters sooner
       const y = fromTop
-        ? -(Math.random() * 40)
-        : Math.random() * canvas.height * 0.55;
+        ? -(Math.random() * 15)                  // nearly flush to top → closer in
+        : Math.random() * canvas.height * 0.25;  // was 0.55 → upper 25% = +30% up
 
       stars.push({
         x,
         y,
         vx: speed * Math.cos(angle),
         vy: speed * Math.sin(angle),
-        len: 100 + Math.random() * 140,
+        len: 260 + Math.random() * 220,
         life: 0,
         maxLife: 55 + Math.floor(Math.random() * 40),
-        maxOpacity: 0.55 + Math.random() * 0.45,
+        maxOpacity: 0.75 + Math.random() * 0.25,
       });
     };
 
@@ -104,16 +104,17 @@ export default function AnimatedBackground() {
         ctx.moveTo(tx, ty);
         ctx.lineTo(s.x, s.y);
         ctx.strokeStyle = grad;
-        ctx.lineWidth = 1.8;
+        ctx.lineWidth = 2.8;
         ctx.lineCap = "round";
         ctx.stroke();
 
         // Bright head glow
-        const headGlow = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, 4);
+        const headGlow = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, 9);
         headGlow.addColorStop(0, `rgba(255, 255, 255, ${alpha})`);
+        headGlow.addColorStop(0.4, `rgba(220, 200, 255, ${alpha * 0.6})`);
         headGlow.addColorStop(1, `rgba(200, 180, 255, 0)`);
         ctx.beginPath();
-        ctx.arc(s.x, s.y, 4, 0, Math.PI * 2);
+        ctx.arc(s.x, s.y, 9, 0, Math.PI * 2);
         ctx.fillStyle = headGlow;
         ctx.fill();
 
