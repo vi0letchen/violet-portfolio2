@@ -20,6 +20,7 @@
 
 import {
   useEffect,
+  useMemo,
   useRef,
   CSSProperties,
   ElementType,
@@ -133,9 +134,9 @@ export default function MagneticText({
   const spansRef = useRef<(HTMLSpanElement | null)[]>([]);
 
   useEffect(() => {
-    // Build state objects for every visible span
-    const states: CharState[] = spansRef.current
-      .filter((el): el is HTMLSpanElement => el !== null)
+    // Build state objects for every character span in document order
+    const states: CharState[] = Array.from(spansRef.current)
+      .filter((el): el is HTMLSpanElement => Boolean(el))
       .map(el => ({ el, px: 0, py: 0, vx: 0, vy: 0 }));
 
     charsRef.current = states;
@@ -148,24 +149,48 @@ export default function MagneticText({
     };
   }, [children]);
 
-  // Split text into characters, preserving spaces as non-breaking
-  const chars = children.split("").map((ch, i) => ({
-    ch:  ch === " " ? "\u00a0" : ch,
-    key: i,
-  }));
+  // Split into word/space segments — memoised so the structure is stable across renders.
+  // Each word's character spans are wrapped in a whitespace-nowrap container so the
+  // browser can only break between words, never mid-letter.
+  const segments = useMemo(() => {
+    // split(" ") with the captured delimiter gives ["word", " ", "word", ...]
+    return children.split(/( )/).map((seg, si, arr) => {
+      const startIdx = arr.slice(0, si).join("").length;
+      return { isSpace: seg === " ", text: seg, startIdx };
+    });
+  }, [children]);
 
   return (
     <Tag className={className} style={style}>
-      {chars.map(({ ch, key }) => (
-        <span
-          key={key}
-          ref={el => { spansRef.current[key] = el; }}
-          className="inline-block"
-          style={{ willChange: "transform" }}
-        >
-          {ch}
-        </span>
-      ))}
+      {segments.map((seg, si) => {
+        if (seg.isSpace) {
+          return (
+            <span
+              key={`sp-${si}`}
+              ref={el => { spansRef.current[seg.startIdx] = el; }}
+              className="inline-block"
+              style={{ willChange: "transform" }}
+            >
+              {"\u00a0"}
+            </span>
+          );
+        }
+        // Word wrapper — whitespace-nowrap prevents any break within the word
+        return (
+          <span key={`w-${si}`} className="inline-block whitespace-nowrap">
+            {seg.text.split("").map((ch, j) => (
+              <span
+                key={j}
+                ref={el => { spansRef.current[seg.startIdx + j] = el; }}
+                className="inline-block"
+                style={{ willChange: "transform" }}
+              >
+                {ch}
+              </span>
+            ))}
+          </span>
+        );
+      })}
     </Tag>
   );
 }

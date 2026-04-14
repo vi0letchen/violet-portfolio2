@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion";
 import SectionWrapper from "./SectionWrapper";
-import ScrollFade from "./ScrollFade";
 import MagneticText from "./MagneticText";
 import { SkillSpan } from "./SkillPreview";
+import { useHScroll } from "./HScrollContext";
 
 const skillCategories = [
   {
@@ -27,11 +27,41 @@ const skillCategories = [
   },
 ];
 
+/** Shared fade-in variant reused for both title items and cards. */
+const fadeIn = {
+  hidden: (custom: { x?: number; y?: number }) => ({
+    opacity: 0,
+    x: custom.x ?? 0,
+    y: custom.y ?? 0,
+  }),
+  visible: {
+    opacity: 1,
+    x: 0,
+    y: 0,
+    transition: { duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] },
+  },
+};
+
 function SkillCards() {
+  const { containerRef, isHorizontal } = useHScroll();
+
   return (
     <>
-      {skillCategories.map((cat) => (
-        <ScrollFade key={cat.label} yOffset={20}>
+      {skillCategories.map((cat, i) => (
+        <motion.div
+          key={cat.label}
+          custom={{ x: isHorizontal ? 50 + i * 20 : 0, y: isHorizontal ? 0 : 20 }}
+          variants={fadeIn}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{
+            root: isHorizontal ? containerRef : undefined,
+            once: false,
+            amount: 0.25,
+          }}
+          transition={{ duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94], delay: i * 0.1 }}
+          className="h-full"
+        >
           <div
             className="rounded-2xl border border-white/[0.06] bg-[#0e0e1a] p-5 h-full flex flex-col"
             style={{ boxShadow: `inset 0 0 40px ${cat.accent}08` }}
@@ -66,34 +96,56 @@ function SkillCards() {
               ))}
             </div>
           </div>
-        </ScrollFade>
+        </motion.div>
       ))}
     </>
   );
 }
 
 export default function Skills() {
+  const { containerRef, isHorizontal } = useHScroll();
+
   return (
     <SectionWrapper id="skills">
       <div className="flex flex-col md:flex-row md:items-center gap-10 md:gap-14 xl:gap-20">
 
-        {/* Title column — full width on mobile, fixed on desktop */}
+        {/* Title column */}
         <div className="flex-shrink-0 md:w-[34%]">
-          <ScrollFade yOffset={20}>
-            <span className="inline-block text-xs font-semibold tracking-[0.2em] uppercase text-[#7c6af7] mb-3">
-              04 — Skills
-            </span>
-          </ScrollFade>
-          <ScrollFade yOffset={24}>
+          <motion.span
+            className="inline-block text-xs font-semibold tracking-[0.2em] uppercase text-[#7c6af7] mb-3"
+            custom={{ x: isHorizontal ? 30 : 0, y: isHorizontal ? 0 : 16 }}
+            variants={fadeIn}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ root: isHorizontal ? containerRef : undefined, once: false, amount: 0.5 }}
+          >
+            04 — Skills
+          </motion.span>
+
+          <motion.div
+            custom={{ x: isHorizontal ? 30 : 0, y: isHorizontal ? 0 : 20 }}
+            variants={fadeIn}
+            initial="hidden"
+            whileInView="visible"
+            transition={{ duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.05 }}
+            viewport={{ root: isHorizontal ? containerRef : undefined, once: false, amount: 0.5 }}
+          >
             <MagneticText className="text-4xl xl:text-5xl font-bold text-[#e2e8f0] leading-tight mb-4">
               What I work with.
             </MagneticText>
-          </ScrollFade>
-          <ScrollFade yOffset={20}>
-            <p className="text-[#6b7280] text-base leading-relaxed">
-              A snapshot of my technical and professional toolkit.
-            </p>
-          </ScrollFade>
+          </motion.div>
+
+          <motion.p
+            className="text-[#6b7280] text-base leading-relaxed"
+            custom={{ x: isHorizontal ? 30 : 0, y: isHorizontal ? 0 : 16 }}
+            variants={fadeIn}
+            initial="hidden"
+            whileInView="visible"
+            transition={{ duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.1 }}
+            viewport={{ root: isHorizontal ? containerRef : undefined, once: false, amount: 0.5 }}
+          >
+            A snapshot of my technical and professional toolkit.
+          </motion.p>
         </div>
 
         {/* Skill cards */}

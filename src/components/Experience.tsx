@@ -99,7 +99,7 @@ function ExpCard({
 
 export default function Experience() {
   return (
-    <SectionWrapper id="experience">
+    <SectionWrapper id="experience" className="!max-w-none">
       <div className="flex flex-col md:flex-row md:items-center gap-10 md:gap-14 xl:gap-20">
 
         {/* Title column */}
@@ -157,7 +157,7 @@ export default function Experience() {
               Layout per row: [period 8rem] [dot col 2.5rem] [card 23vw]
               Vertical line runs at left = 8rem + 1.25rem = 9.25rem (center of dot col)
           */}
-          <div className="hidden md:flex flex-col justify-between relative min-h-[62vh]">
+          <div className="hidden md:flex flex-col gap-10 relative min-h-[62vh]">
 
             {/* Vertical rail line */}
             <div
@@ -197,7 +197,7 @@ export default function Experience() {
                 </div>
 
                 {/* Card — flush left from the rail */}
-                <div className="flex-shrink-0 w-[23vw] pl-5">
+                <div className="flex-shrink-0 md:w-[45vw] lg:w-[40vw] pl-5">
                   <ExpCard exp={exp} align="left" />
                 </div>
 

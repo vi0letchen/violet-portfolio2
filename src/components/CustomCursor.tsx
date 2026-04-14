@@ -21,12 +21,12 @@ import { useEffect, useRef } from "react";
 /* ─── Particle config ───────────────────────────────────────────────── */
 
 const PARTICLES = [
-  { r: 13, speed: 1.1, phase: 0.0,             size: 4, color: "#7c6af7", lag: 0.07 },
-  { r: 13, speed: 1.1, phase: Math.PI,          size: 4, color: "#38bdf8", lag: 0.07 },
-  { r: 20, speed: 0.65, phase: Math.PI / 3,     size: 3, color: "#a78bfa", lag: 0.05 },
-  { r: 20, speed: 0.65, phase: Math.PI + Math.PI / 3, size: 3, color: "#38bdf8", lag: 0.05 },
-  { r: 28, speed: 0.40, phase: Math.PI * 0.8,   size: 2, color: "#7c6af7", lag: 0.035 },
-  { r: 28, speed: 0.40, phase: Math.PI * 1.8,   size: 2, color: "#a78bfa", lag: 0.035 },
+  { r: 13, speed: 1.1, phase: 0.0,             size: 4, color: "#7c6af7", lag: 0.18 },
+  { r: 13, speed: 1.1, phase: Math.PI,          size: 4, color: "#38bdf8", lag: 0.18 },
+  { r: 20, speed: 0.65, phase: Math.PI / 3,     size: 3, color: "#a78bfa", lag: 0.14 },
+  { r: 20, speed: 0.65, phase: Math.PI + Math.PI / 3, size: 3, color: "#38bdf8", lag: 0.14 },
+  { r: 28, speed: 0.40, phase: Math.PI * 0.8,   size: 2, color: "#7c6af7", lag: 0.10 },
+  { r: 28, speed: 0.40, phase: Math.PI * 1.8,   size: 2, color: "#a78bfa", lag: 0.10 },
 ];
 
 /* ─── Lerp helper ───────────────────────────────────────────────────── */
@@ -77,9 +77,9 @@ export default function CustomCursor() {
         dotRef.current.style.opacity   = mx < -100 ? "0" : "1";
       }
 
-      /* Ring — lerp 0.10 */
-      s.rx = lerp(s.rx, mx, 0.10);
-      s.ry = lerp(s.ry, my, 0.10);
+      /* Ring — lerp 0.22 */
+      s.rx = lerp(s.rx, mx, 0.22);
+      s.ry = lerp(s.ry, my, 0.22);
       if (ringRef.current) {
         const ringSize = hover ? 52 : 36;
         const half = ringSize / 2;

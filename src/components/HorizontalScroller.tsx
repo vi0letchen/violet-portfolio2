@@ -91,14 +91,26 @@ export default function HorizontalScroller({ children }: Props) {
       if (!c) return;
       const target = document.getElementById(id);
       if (!target) return;
+
+      // Find the direct child panel of c that contains the target section
+      let panelEl: HTMLElement | null = target;
+      while (panelEl && panelEl.parentElement !== c) {
+        panelEl = panelEl.parentElement as HTMLElement | null;
+      }
+      if (!panelEl) return;
+
+      // Reset panel vertical scroll so the title is at the top
+      panelEl.scrollTop = 0;
+
+      // Full-viewport sections (skills, contact) should land exactly flush — nudge = 0.
+      // Other sections: subtract ~12% so the title column sits at centre-left.
+      const nudge = (id === "skills" || id === "contact")
+        ? 0
+        : Math.round(window.innerWidth * 0.12);
       cancelAnimationFrame(rafId.current);
       const max = c.scrollWidth - c.clientWidth;
-      const left =
-        target.getBoundingClientRect().left -
-        c.getBoundingClientRect().left +
-        c.scrollLeft;
       activeLerp.current = LERP_SECTION_NAV;
-      targetX.current = Math.max(0, Math.min(max, left));
+      targetX.current = Math.max(0, Math.min(max, panelEl.offsetLeft - nudge));
       rafId.current = requestAnimationFrame(animate);
     });
     return () => registerSectionScroller(null);
@@ -172,7 +184,7 @@ export default function HorizontalScroller({ children }: Props) {
         {Children.map(children, (child, i) => (
           <div
             key={i}
-            className="w-full md:w-auto md:flex-shrink-0 md:h-screen md:overflow-y-auto"
+            className="w-full md:w-auto md:flex-shrink-0 md:h-screen md:overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
             style={{
               marginRight: i >= 1 && i <= 4 ? "10vw" : 0,
             }}

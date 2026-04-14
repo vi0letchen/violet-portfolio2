@@ -39,7 +39,7 @@ export default function About() {
             <ScrollFade>
               <p className="text-[#94a3b8] text-base leading-relaxed mb-5">
                 I&apos;m a Computer Science and Information Technology Management graduate from the
-                University of Auckland, currently working as a Junior Developer where I build
+                University of Auckland, currently volunteering as a Junior Developer where I build
                 full-stack web applications for university clubs and communities.
               </p>
             </ScrollFade>

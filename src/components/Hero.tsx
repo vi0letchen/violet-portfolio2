@@ -309,18 +309,14 @@ export default function Hero() {
 
           {/* CTA buttons */}
           <div className="flex flex-wrap gap-4 mb-10 justify-center">
-            <button
-              onClick={() => {
-                const el = document.getElementById("projects");
-                if (!el) return;
-                isHorizontal
-                  ? el.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" })
-                  : el.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
+            <a
+              href="/Resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
               className="px-6 py-3 rounded-xl bg-[#7c6af7] hover:bg-[#6d5ce6] text-white text-sm font-semibold transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-[#7c6af7]/30 cursor-pointer"
             >
-              View Projects
-            </button>
+              View Resume
+            </a>
             <button
               onClick={() => {
                 const el = document.getElementById("contact");

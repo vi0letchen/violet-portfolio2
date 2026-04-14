@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import SectionWrapper from "./SectionWrapper";
 import MagneticText from "./MagneticText";
+import { useHScroll } from "./HScrollContext";
 
 const contacts = [
   {
@@ -38,25 +39,52 @@ const contacts = [
   },
 ];
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: (delay: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94], delay },
+  }),
+};
+
 export default function Contact() {
+  const { containerRef, isHorizontal } = useHScroll();
+  const vp = { root: isHorizontal ? containerRef : undefined, once: false, amount: 0.3 };
+
   return (
     <SectionWrapper id="contact">
       <div className="max-w-2xl mx-auto text-center">
+
         <div className="mb-16">
-          <span className="inline-block text-xs font-semibold tracking-[0.2em] uppercase text-[#7c6af7] mb-3">
+          <motion.span
+            className="inline-block text-xs font-semibold tracking-[0.2em] uppercase text-[#7c6af7] mb-3"
+            variants={fadeUp} custom={0} initial="hidden" whileInView="visible" viewport={vp}
+          >
             05 — Contact
-          </span>
-          <MagneticText className="text-4xl sm:text-5xl font-bold text-[#e2e8f0] leading-tight mb-4">
-            Let's work together.
-          </MagneticText>
+          </motion.span>
+
+          <motion.div
+            variants={fadeUp} custom={0.07} initial="hidden" whileInView="visible" viewport={vp}
+          >
+            <MagneticText className="text-4xl sm:text-5xl font-bold text-[#e2e8f0] leading-tight mb-4">
+              Let's work together.
+            </MagneticText>
+          </motion.div>
         </div>
 
-        <p className="text-[#94a3b8] text-base leading-relaxed mb-12">
+        <motion.p
+          className="text-[#94a3b8] text-base leading-relaxed mb-12"
+          variants={fadeUp} custom={0.14} initial="hidden" whileInView="visible" viewport={vp}
+        >
           Whether you&apos;re looking for a developer, want to collaborate on a project, or just
           want to say hi — my inbox is always open.
-        </p>
+        </motion.p>
 
-        <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
+        <motion.div
+          className="flex flex-col sm:flex-row justify-center gap-4 mb-12"
+          variants={fadeUp} custom={0.21} initial="hidden" whileInView="visible" viewport={vp}
+        >
           <a
             href="mailto:violetchenbusiness@gmail.com"
             className="px-8 py-4 rounded-xl bg-[#7c6af7] hover:bg-[#6d5ce6] text-white font-semibold transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-[#7c6af7]/30 cursor-pointer"
@@ -71,9 +99,12 @@ export default function Contact() {
           >
             See My Work
           </a>
-        </div>
+        </motion.div>
 
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
+        <motion.div
+          className="flex flex-col sm:flex-row justify-center gap-4"
+          variants={fadeUp} custom={0.28} initial="hidden" whileInView="visible" viewport={vp}
+        >
           {contacts.map((c) => (
             <motion.a
               key={c.label}
@@ -87,7 +118,8 @@ export default function Contact() {
               <span>{c.value}</span>
             </motion.a>
           ))}
-        </div>
+        </motion.div>
+
       </div>
     </SectionWrapper>
   );
