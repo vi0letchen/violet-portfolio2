@@ -59,7 +59,7 @@ float clouds(vec2 p){
   return t;
 }
 void main(){
-  vec2 uv=(FC-.5*R)/MN, st=uv*vec2(2,1);
+  vec2 uv=(FC-.5*R)/MN*0.55, st=uv*vec2(2,1);
   vec3 col=vec3(0);
 
   /* slow-drifting nebula cloud base */
@@ -293,11 +293,10 @@ export default function Projects() {
     const onScroll = () => {
       cancelAnimationFrame(rafId);
       rafId = requestAnimationFrame(() => {
-        const max = container.scrollWidth - container.clientWidth;
-        if (max <= 0) return;
-        const progress = container.scrollLeft / max;
-        // 0 → 0 opacity at start, ramps to 0.45 at full scroll
-        overlay.style.opacity = String(Math.min(progress * 0.55, 0.45));
+        // Ramp from 0 → 0.45 over the first viewport-width of scroll (Hero → About),
+        // then stay at 0.45 for all subsequent sections.
+        const progress = Math.min(container.scrollLeft / (window.innerWidth * 0.5), 1);
+        overlay.style.opacity = String(progress * 0.45);
       });
     };
 
@@ -469,7 +468,7 @@ export default function Projects() {
       <div className="hidden md:flex flex-row h-screen items-stretch" style={{ position: "relative", zIndex: 10 }}>
 
         {/* ── Title column ──────────────────────────────────────────── */}
-        <div className="flex-shrink-0 w-[24vw] flex flex-col justify-center pl-16 pr-12">
+        <div className="flex-shrink-0 w-[35vw] flex flex-col justify-center pl-16 pr-12">
           <ScrollFade yOffset={20}>
             <span className="inline-block text-xs font-semibold tracking-[0.2em] uppercase text-[#7c6af7] mb-3">
               03 — Projects
@@ -490,7 +489,7 @@ export default function Projects() {
         {/* ── Live projects — three cards in a row ──────────────────── */}
         <div className="flex flex-row items-center gap-5 px-10 py-10">
           {mainProjects.map((project) => (
-            <div key={project.title} className="flex-shrink-0 w-[23vw] h-[50vh] py-2 flex flex-col">
+            <div key={project.title} className="flex-shrink-0 w-[28vw] max-w-[460px] h-[460px] py-2 flex flex-col">
               <BrowserCard project={project} />
             </div>
           ))}
@@ -520,7 +519,7 @@ export default function Projects() {
         </div>
 
         {/* ── Hackathon — two cards stacked top & bottom ────────────── */}
-        <div className="flex-shrink-0 w-[26vw] flex flex-col justify-center gap-6 pl-8 pr-10 py-10">
+        <div className="flex-shrink-0 w-[32vw] max-w-[600px] flex flex-col justify-center gap-6 pl-8 pr-10 py-10">
           {hackathonProjects.map((project) => (
             <HackathonCard key={project.title} project={project} />
           ))}

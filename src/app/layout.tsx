@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import AnimatedBackground from "@/components/AnimatedBackground";
 import CustomCursor from "@/components/CustomCursor";
 import { SkillPreviewProvider } from "@/components/SkillPreview";
 
@@ -33,7 +32,6 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth">
       <body className={`${inter.variable} antialiased bg-black text-[#e2e8f0]`}>
         <CustomCursor />
-        <AnimatedBackground />
         <SkillPreviewProvider>
           <div className="relative" style={{ zIndex: 10 }}>
             {children}

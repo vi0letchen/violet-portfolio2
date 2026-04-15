@@ -110,10 +110,10 @@ export default function HorizontalScroller({ children }: Props) {
       // Reset panel vertical scroll so the title is at the top
       panelEl.scrollTop = 0;
 
-      // Full-viewport sections (skills, contact) should land exactly flush — nudge = 0.
+      // Skills / Contact: centre the panel in the viewport.
       // Other sections: subtract ~12% so the title column sits at centre-left.
       const nudge = (id === "skills" || id === "contact")
-        ? 0
+        ? Math.round((window.innerWidth - panelEl.offsetWidth) / 2)
         : Math.round(window.innerWidth * 0.12);
       cancelAnimationFrame(rafId.current);
       const max = c.scrollWidth - c.clientWidth;

@@ -17,25 +17,55 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen]   = useState(false);
   const { isHorizontal, containerRef, scrollToSection } = useHScroll();
 
-  /* Fade in — full opacity exactly when About scrolls into view */
+  /* Fade in — full opacity exactly when About scrolls into view, stays full after */
   useEffect(() => {
-    // The hero is always one full viewport wide (horizontal) or tall (vertical),
-    // so scrolling one viewport unit brings About to the left/top edge.
+    const el = containerRef.current;
+
+    // Measure the About section's true scroll position after layout settles.
+    // getBoundingClientRect().left + scrollLeft gives the absolute offset
+    // in the scroll container's coordinate space — reliable regardless of panel widths.
+    let target = 0;
+    const measureTarget = () => {
+      const about = document.getElementById("about");
+      if (!about) { target = isHorizontal ? window.innerWidth : window.innerHeight; return; }
+
+      if (isHorizontal && el) {
+        // Find the direct panel child of the scroll container that holds #about
+        let panel: HTMLElement | null = about;
+        while (panel && panel.parentElement !== el) {
+          panel = panel.parentElement as HTMLElement | null;
+        }
+        target = panel
+          ? panel.getBoundingClientRect().left + el.scrollLeft
+          : window.innerWidth;
+      } else {
+        target = about.getBoundingClientRect().top + window.scrollY;
+      }
+    };
+
+    // Wait one frame so layout is complete before measuring
+    const rafId = requestAnimationFrame(measureTarget);
+
     const compute = (scrollPos: number) => {
-      const target = isHorizontal ? window.innerWidth : window.innerHeight;
+      if (target <= 0) return; // not measured yet
       setBgOpacity(Math.min(1, scrollPos / target));
     };
 
     if (isHorizontal) {
-      const el = containerRef.current;
       if (!el) return;
       const onScroll = () => compute(el.scrollLeft);
       el.addEventListener("scroll", onScroll, { passive: true });
-      return () => el.removeEventListener("scroll", onScroll);
+      return () => {
+        cancelAnimationFrame(rafId);
+        el.removeEventListener("scroll", onScroll);
+      };
     } else {
       const onScroll = () => compute(window.scrollY);
       window.addEventListener("scroll", onScroll, { passive: true });
-      return () => window.removeEventListener("scroll", onScroll);
+      return () => {
+        cancelAnimationFrame(rafId);
+        window.removeEventListener("scroll", onScroll);
+      };
     }
   }, [isHorizontal, containerRef]);
 
@@ -75,10 +105,12 @@ export default function Navbar() {
         <motion.a
           href="#"
           onClick={handleLogoClick}
-          className="text-lg font-semibold tracking-tight gradient-text"
-          whileHover={{ scale: 1.03 }}
+          whileHover={{ scale: 1.05 }}
+          className="block"
+          aria-label="Home"
         >
-          vc.
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/favicon.ico" alt="vc." className="w-8 h-8 object-contain" />
         </motion.a>
 
         {/* Desktop links */}

@@ -157,6 +157,21 @@ export default function Hero() {
     const update = (scrollPos: number, viewSize: number) => {
       const progress = Math.min(Math.max(scrollPos / viewSize, 0), 1);
 
+      if (progress < 0.01) {
+        // Smoothly reassemble letters when scrolled back to hero
+        gsap.to(allLetters, {
+          x: 0, y: 0, rotation: 0, opacity: 1,
+          duration: 0.7, ease: "power3.out",
+          stagger: { amount: 0.4, from: "random" },
+          overwrite: true,
+        });
+        if (badgeRef.current)  gsap.to(badgeRef.current,  { opacity: 1, duration: 0.5, overwrite: true });
+        if (scrollBtn.current) gsap.to(scrollBtn.current, { opacity: 1, duration: 0.5, overwrite: true });
+        if (bottomRef.current) gsap.to(bottomRef.current, { opacity: 1, y: 0, duration: 0.5, overwrite: true });
+        return;
+      }
+
+      // Forward explosion — unchanged
       allLetters.forEach((el, i) => {
         const t = targets.current[i];
         if (!t) return;
@@ -231,7 +246,7 @@ export default function Hero() {
       <div className="relative z-10 w-full px-6 md:px-16 max-w-4xl mx-auto text-center flex flex-col items-center">
 
         {/* Badge */}
-        <div ref={badgeRef} className="flex mb-8 md:mb-10 justify-center" style={{ opacity: 0 }}>
+        <div ref={badgeRef} className="flex mb-8 md:mb-10 [@media(max-height:700px)]:mb-3 justify-center" style={{ opacity: 0 }}>
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium bg-[#7c6af7]/10 border border-[#7c6af7]/30 text-[#a78bfa]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#a78bfa] animate-pulse" />
             Available for opportunities
@@ -247,13 +262,17 @@ export default function Hero() {
             <span
               key={i}
               ref={(el) => { firstRefs.current[i] = el; }}
-              className="inline-block font-black text-[#e2e8f0] select-none"
+              className="inline-block font-black select-none"
               style={{
-                fontSize: "clamp(3.2rem, 9vw, 10.5rem)",
+                fontSize: "clamp(4rem, min(15vw, 16vh), 18rem)",
                 lineHeight: 0.9,
-                letterSpacing: "-0.02em",
+                letterSpacing: "-0.04em",
                 willChange: "transform, opacity",
                 opacity: 0,
+                background: "linear-gradient(160deg, #ffffff 0%, #c8d4f0 60%, #a8b8e8 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
               }}
             >
               {char}
@@ -262,19 +281,19 @@ export default function Hero() {
         </div>
 
         {/* "CHEN" — exploding letters with gradient */}
-        <div className="flex leading-none mb-8 md:mb-12 justify-center">
+        <div className="flex leading-none mb-8 md:mb-12 [@media(max-height:700px)]:mb-3 justify-center">
           {LAST.split("").map((char, i) => (
             <span
               key={i}
               ref={(el) => { lastRefs.current[i] = el; }}
               className="inline-block font-black select-none"
               style={{
-                fontSize: "clamp(3.2rem, 9vw, 10.5rem)",
+                fontSize: "clamp(4rem, min(15vw, 16vh), 18rem)",
                 lineHeight: 0.9,
-                letterSpacing: "-0.02em",
+                letterSpacing: "-0.04em",
                 willChange: "transform, opacity",
                 opacity: 0,
-                background: "linear-gradient(125deg, #7c6af7 0%, #a78bfa 45%, #38bdf8 100%)",
+                background: "linear-gradient(125deg, #6d5ef5 0%, #a78bfa 45%, #38bdf8 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
@@ -287,35 +306,35 @@ export default function Hero() {
 
         {/* Thin cinematic rule */}
         <div
-          className="mb-7 md:mb-8"
+          className="mb-7 md:mb-8 [@media(max-height:700px)]:mb-3"
           style={{
-            width: "clamp(160px, 22vw, 340px)",
+            width: "clamp(200px, 28vw, 420px)",
             height: 1,
-            background: "linear-gradient(90deg, rgba(124,106,247,0.7) 0%, rgba(56,189,248,0.3) 60%, transparent 100%)",
+            background: "linear-gradient(90deg, transparent 0%, rgba(109,94,245,0.6) 25%, rgba(167,139,250,1) 50%, rgba(56,189,248,0.6) 75%, transparent 100%)",
           }}
         />
 
         {/* Role / tagline / buttons / social */}
         <div ref={bottomRef} style={{ opacity: 0 }}>
           {/* Typewriter role */}
-          <div className="text-lg sm:text-xl text-[#94a3b8] mb-3 h-7 flex items-center gap-1 justify-center">
-            <span className="text-[#a78bfa] font-medium tracking-wide">{role}</span>
-            <span className="inline-block w-0.5 h-[1.1em] bg-[#7c6af7] animate-pulse" />
+          <div className="text-lg sm:text-xl mb-3 h-7 flex items-center gap-1.5 justify-center">
+            <span className="text-[#c4b5fd] font-semibold tracking-[0.04em]">{role}</span>
+            <span className="inline-block w-[2px] h-[1.1em] bg-[#a78bfa] animate-pulse rounded-full" />
           </div>
 
           {/* Tagline */}
-          <p className="text-sm sm:text-base text-[#6b7280] max-w-md mb-9 leading-relaxed">
+          <p className="text-sm sm:text-base text-[#8892a4] max-w-md mb-9 [@media(max-height:700px)]:mb-4 leading-relaxed tracking-wide">
             CS graduate from University of Auckland building real products
             for real people — fast, polished, and production-ready.
           </p>
 
           {/* CTA buttons */}
-          <div className="flex flex-wrap gap-4 mb-10 justify-center">
+          <div className="flex flex-wrap gap-4 mb-10 [@media(max-height:700px)]:mb-4 justify-center">
             <a
               href="/Resume.pdf"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-3 rounded-xl bg-[#7c6af7] hover:bg-[#6d5ce6] text-white text-sm font-semibold transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-[#7c6af7]/30 cursor-pointer"
+              className="px-7 py-3 rounded-xl bg-[#6d5ef5] hover:bg-[#5d4ee5] text-white text-sm font-semibold tracking-wide transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-[#7c6af7]/40 cursor-pointer"
             >
               View Resume
             </a>
@@ -327,7 +346,7 @@ export default function Hero() {
                   ? el.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" })
                   : el.scrollIntoView({ behavior: "smooth", block: "start" });
               }}
-              className="px-6 py-3 rounded-xl border border-[#1e1e2e] hover:border-[#7c6af7]/50 text-[#94a3b8] hover:text-[#a78bfa] text-sm font-semibold transition-all duration-200 hover:scale-105 glass cursor-pointer"
+              className="px-7 py-3 rounded-xl border border-[#2a2a45] hover:border-[#7c6af7]/60 text-[#94a3b8] hover:text-[#c4b5fd] text-sm font-semibold tracking-wide transition-all duration-200 hover:scale-105 glass cursor-pointer"
             >
               Get in Touch
             </button>

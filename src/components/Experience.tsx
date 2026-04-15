@@ -197,7 +197,7 @@ export default function Experience() {
                 </div>
 
                 {/* Card — flush left from the rail */}
-                <div className="flex-shrink-0 md:w-[45vw] lg:w-[40vw] pl-5">
+                <div className="flex-shrink-0 w-[800px] pl-5">
                   <ExpCard exp={exp} align="left" />
                 </div>
 
