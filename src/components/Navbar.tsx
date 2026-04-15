@@ -13,27 +13,31 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const [scrolled, setScrolled]   = useState(false);
+  const [bgOpacity, setBgOpacity] = useState(0);
   const [menuOpen, setMenuOpen]   = useState(false);
-  const { isHorizontal, scrollToSection } = useHScroll();
+  const { isHorizontal, containerRef, scrollToSection } = useHScroll();
 
-  /* Detect when the hero panel leaves the viewport (works for both axes) */
+  /* Fade in — full opacity exactly when About scrolls into view */
   useEffect(() => {
-    // Wait one tick so the hero section is in the DOM
-    const timer = setTimeout(() => {
-      const hero = document.getElementById("hero");
-      if (!hero) return;
+    // The hero is always one full viewport wide (horizontal) or tall (vertical),
+    // so scrolling one viewport unit brings About to the left/top edge.
+    const compute = (scrollPos: number) => {
+      const target = isHorizontal ? window.innerWidth : window.innerHeight;
+      setBgOpacity(Math.min(1, scrollPos / target));
+    };
 
-      const observer = new IntersectionObserver(
-        ([entry]) => setScrolled(!entry.isIntersecting),
-        { threshold: 0 }
-      );
-      observer.observe(hero);
-      return () => observer.disconnect();
-    }, 0);
-
-    return () => clearTimeout(timer);
-  }, []);
+    if (isHorizontal) {
+      const el = containerRef.current;
+      if (!el) return;
+      const onScroll = () => compute(el.scrollLeft);
+      el.addEventListener("scroll", onScroll, { passive: true });
+      return () => el.removeEventListener("scroll", onScroll);
+    } else {
+      const onScroll = () => compute(window.scrollY);
+      window.addEventListener("scroll", onScroll, { passive: true });
+      return () => window.removeEventListener("scroll", onScroll);
+    }
+  }, [isHorizontal, containerRef]);
 
   const scrollTo = useCallback(
     (id: string) => {
@@ -59,9 +63,13 @@ export default function Navbar() {
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "glass border-b border-[#1e1e2e]" : "bg-transparent"
-      }`}
+      className="fixed top-0 left-0 right-0 z-50"
+      style={{
+        background:       `rgba(18, 18, 30, ${(bgOpacity * 0.92).toFixed(3)})`,
+        backdropFilter:   bgOpacity > 0.01 ? `blur(${(bgOpacity * 16).toFixed(1)}px)` : "none",
+        WebkitBackdropFilter: bgOpacity > 0.01 ? `blur(${(bgOpacity * 16).toFixed(1)}px)` : "none",
+        borderBottom:     `1px solid rgba(255, 255, 255, ${(bgOpacity * 0.07).toFixed(3)})`,
+      }}
     >
       <nav className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
         <motion.a

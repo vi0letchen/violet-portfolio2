@@ -231,7 +231,7 @@ export default function Hero() {
       <div className="relative z-10 w-full px-6 md:px-16 max-w-4xl mx-auto text-center flex flex-col items-center">
 
         {/* Badge */}
-        <div ref={badgeRef} className="flex mb-8 md:mb-10 justify-center">
+        <div ref={badgeRef} className="flex mb-8 md:mb-10 justify-center" style={{ opacity: 0 }}>
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium bg-[#7c6af7]/10 border border-[#7c6af7]/30 text-[#a78bfa]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#a78bfa] animate-pulse" />
             Available for opportunities
@@ -253,6 +253,7 @@ export default function Hero() {
                 lineHeight: 0.9,
                 letterSpacing: "-0.02em",
                 willChange: "transform, opacity",
+                opacity: 0,
               }}
             >
               {char}
@@ -272,6 +273,7 @@ export default function Hero() {
                 lineHeight: 0.9,
                 letterSpacing: "-0.02em",
                 willChange: "transform, opacity",
+                opacity: 0,
                 background: "linear-gradient(125deg, #7c6af7 0%, #a78bfa 45%, #38bdf8 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
@@ -294,7 +296,7 @@ export default function Hero() {
         />
 
         {/* Role / tagline / buttons / social */}
-        <div ref={bottomRef}>
+        <div ref={bottomRef} style={{ opacity: 0 }}>
           {/* Typewriter role */}
           <div className="text-lg sm:text-xl text-[#94a3b8] mb-3 h-7 flex items-center gap-1 justify-center">
             <span className="text-[#a78bfa] font-medium tracking-wide">{role}</span>
@@ -354,6 +356,7 @@ export default function Hero() {
         ref={scrollBtn}
         onClick={scrollToNext}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer group md:bottom-auto md:right-8 md:left-auto md:translate-x-0 md:top-1/2 md:-translate-y-1/2 md:flex-row"
+        style={{ opacity: 0 }}
         aria-label="Scroll to next section"
       >
         <span className="text-[10px] text-[#6b7280] tracking-[0.25em] uppercase group-hover:text-[#a78bfa] transition-colors">

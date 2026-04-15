@@ -21,10 +21,13 @@ const LERP = 0.12;
 const LERP_SECTION_NAV = 0.045;
 
 /**
- * Scroll distance multiplier per wheel event. Higher = faster scrolling.
- * Combined with low LERP for smooth, fast feeling.
+ * Scroll multiplier for trackpad (small, continuous deltaY events).
+ * Mouse wheel sends large discrete deltas so gets a separate, lower multiplier.
  */
-const SCROLL_MULTIPLIER = 1.8;
+const SCROLL_MULTIPLIER_TRACKPAD = 2.3;
+const SCROLL_MULTIPLIER_MOUSE    = 1.8;
+/** deltaY above this threshold → treat as a physical mouse wheel notch. */
+const MOUSE_DELTA_THRESHOLD = 40;
 
 /**
  * Horizontal scroll container for desktop (≥ md).
@@ -71,8 +74,13 @@ export default function HorizontalScroller({ children }: Props) {
       e.preventDefault();
       activeLerp.current = LERP;
       const max = el.scrollWidth - el.clientWidth;
-      targetX.current = el.scrollLeft;
-      targetX.current = Math.max(0, Math.min(max, targetX.current + e.deltaY * SCROLL_MULTIPLIER));
+      // Large discrete delta → physical mouse wheel; small continuous → trackpad.
+      const multiplier = Math.abs(e.deltaY) > MOUSE_DELTA_THRESHOLD
+        ? SCROLL_MULTIPLIER_MOUSE
+        : SCROLL_MULTIPLIER_TRACKPAD;
+      // Accumulate onto targetX (not el.scrollLeft) so rapid trackpad events
+      // build up momentum instead of each one resetting the look-ahead.
+      targetX.current = Math.max(0, Math.min(max, targetX.current + e.deltaY * multiplier));
       cancelAnimationFrame(rafId.current);
       rafId.current = requestAnimationFrame(animate);
     };

@@ -78,7 +78,9 @@ type NodePhysics = {
 
 /* ─── OrbitalSystem ─────────────────────────────────────────────────── */
 
-function OrbitalSystem() {
+function OrbitalSystem({ radius = RADIUS }: { radius?: number }) {
+  const arena = radius * 2 + 220;
+
   const [activeId, setActiveId] = useState<number | null>(null);
 
   /* DOM refs — updated directly from RAF, never via React state */
@@ -96,12 +98,14 @@ function OrbitalSystem() {
   /* Shared refs */
   const mouseRef    = useRef({ x: 0, y: 0, active: false });
   const activeIdRef = useRef<number | null>(null);
+  const radiusRef   = useRef(radius);
   const angleRef    = useRef(0);
   const lastTimeRef = useRef(0);
   const rafRef      = useRef(0);
 
-  /* Keep activeIdRef in sync */
+  /* Keep refs in sync with props/state */
   useEffect(() => { activeIdRef.current = activeId; }, [activeId]);
+  useEffect(() => { radiusRef.current = radius; }, [radius]);
 
   /* ── RAF loop ──────────────────────────────────────────────────────── */
   useEffect(() => {
@@ -118,8 +122,8 @@ function OrbitalSystem() {
         const rad       = ((angleRef.current + baseAngle) * Math.PI) / 180;
 
         /* Orbital base position */
-        const orbX = RADIUS * Math.cos(rad);
-        const orbY = RADIUS * Math.sin(rad);
+        const orbX = radiusRef.current * Math.cos(rad);
+        const orbY = radiusRef.current * Math.sin(rad);
 
         /* Idle drift target — unique phase per node */
         const driftX = Math.sin(time * DRIFT_FREQ + DRIFT_PHASES[i])        * DRIFT_AMP;
@@ -220,8 +224,8 @@ function OrbitalSystem() {
       glowRef.current.style.top  = `${(my - 180).toFixed(1)}px`;
     }
 
-    mouseRef.current.x = mx - ARENA / 2;
-    mouseRef.current.y = my - ARENA / 2;
+    mouseRef.current.x = mx - (radiusRef.current * 2 + 220) / 2;
+    mouseRef.current.y = my - (radiusRef.current * 2 + 220) / 2;
   };
 
   const handleMouseEnter = () => {
@@ -241,7 +245,7 @@ function OrbitalSystem() {
   return (
     <div
       className="relative flex items-center justify-center select-none"
-      style={{ width: ARENA, height: ARENA }}
+      style={{ width: arena, height: arena }}
       onClick={() => setActiveId(null)}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
@@ -272,20 +276,20 @@ function OrbitalSystem() {
 
       {/* ── Rings ────────────────────────────────────────────────── */}
       <div className="absolute rounded-full pointer-events-none" style={{
-        width: RADIUS * 2 + 120, height: RADIUS * 2 + 120,
+        width: radius * 2 + 120, height: radius * 2 + 120,
         border: "1px solid rgba(255,255,255,0.04)",
       }} />
       <div className="absolute rounded-full pointer-events-none" style={{
-        width: RADIUS * 2 + 56,  height: RADIUS * 2 + 56,
+        width: radius * 2 + 56,  height: radius * 2 + 56,
         border: "1px solid rgba(255,255,255,0.18)",
         boxShadow: "0 0 28px rgba(124,106,247,0.12), inset 0 0 28px rgba(124,106,247,0.07)",
       }} />
       <div className="absolute rounded-full pointer-events-none" style={{
-        width: RADIUS * 2 - 60,  height: RADIUS * 2 - 60,
+        width: radius * 2 - 60,  height: radius * 2 - 60,
         border: "1px solid rgba(255,255,255,0.04)",
       }} />
       <div className="absolute rounded-full pointer-events-none" style={{
-        width: RADIUS * 2 - 160, height: RADIUS * 2 - 160,
+        width: radius * 2 - 160, height: radius * 2 - 160,
         border: "1px solid rgba(124,106,247,0.07)",
       }} />
 
@@ -506,14 +510,40 @@ function MobileSkills() {
   );
 }
 
+/* ─── Scaled orbital wrapper ─────────────────────────────────────────── */
+
+function ScaledOrbital() {
+  const [radius, setRadius] = useState(RADIUS);
+
+  useEffect(() => {
+    const compute = () => {
+      // Section has px-16 (64px each side) on desktop → subtract 128px from width.
+      // ARENA = radius * 2 + 220, so radius = (available - 220) / 2.
+      const availW = window.innerWidth - 128;
+      const availH = window.innerHeight - 120;
+      // Height is a softer constraint — multiply by 1.3 so orbs sit further
+      // out on typical laptop screens instead of being squeezed inward.
+      const available = Math.min(availW, availH * 1.3);
+      const computed = (available - 220) / 2;
+      setRadius(Math.max(220, Math.min(RADIUS, computed)));
+    };
+    compute();
+    window.addEventListener("resize", compute);
+    return () => window.removeEventListener("resize", compute);
+  }, []);
+
+  // OrbitalSystem sizes itself to (radius*2+220)² — no CSS transform needed.
+  return <OrbitalSystem radius={radius} />;
+}
+
 /* ─── Export ──────────────────────────────────────────────────────────── */
 
 export default function Skills() {
   return (
     <SectionWrapper id="skills">
-      <div className="hidden md:flex items-center justify-center w-full min-h-screen">
+      <div className="hidden md:flex items-center justify-center w-full min-h-screen -mt-10">
         <ScrollFade yOffset={20}>
-          <OrbitalSystem />
+          <ScaledOrbital />
         </ScrollFade>
       </div>
 
