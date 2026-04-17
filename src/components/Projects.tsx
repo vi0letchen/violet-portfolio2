@@ -102,8 +102,8 @@ const mainProjects = [
     url: "https://www.auec.club",
     displayUrl: "auec.club",
     description:
-      "NZ's largest university esports club — event management, payment processing, and user auth built with a team of six.",
-    tags: ["Next.js", "TypeScript", "Auth", "Payments", "Team of 6"],
+      "Auckland University Esports Club is a full-stack club platform built for one of New Zealand's largest university esports communities. The website allows users to browse upcoming events and manage registrations, while also handling merchandise sales. Members can sign up, log in, and stay up to date with the club.",
+    tags: ["Next.js", "TypeScript", "Prisma", "Supabase", "Auth", "Payments"],
     image: "/AUEC.png",
     accent: "#7c6af7",
     border: "rgba(124,106,247,0.35)",
@@ -114,8 +114,8 @@ const mainProjects = [
     url: "https://colab.exchange",
     displayUrl: "colab.exchange",
     description:
-      "Helps UoA Chemistry researchers share and trade lab reagents. Solo full-stack project from design to deployment.",
-    tags: ["Next.js", "Supabase", "Full-Stack", "Solo"],
+      "CoLab is a collaborative platform designed for New Zealand institutions' Chemistry Departments. It aims to prevent wastes of expired reagents and promote sustainable practices in chemistry labs. It provides a space for students and educators to share chemical products. Users can create profiles, upload products with detailed information, and explore contributions from others.",
+    tags: ["Next.js", "TSOA", "Firebase", "Full-Stack"],
     image: "/CoLab.png",
     accent: "#06b6d4",
     border: "rgba(6,182,212,0.35)",
@@ -126,7 +126,7 @@ const mainProjects = [
     url: "https://rainbowengineering.wdcc.co.nz",
     displayUrl: "rainbowengineering.wdcc.co.nz",
     description:
-      "Full-stack club website for UoA Rainbow Engineering with Payload CMS and MongoDB for content management.",
+      "Rainbow Engineering is an information website made for the club Rainbow Engineering at the University of Auckland. Managed and built through the Web Development and Consulting Club. The website provides a platform for the club to manage registrations and share information about the events. It supports users to sign up for events from a Google Form and clients to edit website content through Payload CMS.",
     tags: ["Next.js", "Payload CMS", "MongoDB", "Full-Stack"],
     image: "/RainbowEngineering.png",
     accent: "#a78bfa",
@@ -141,7 +141,7 @@ const hackathonProjects = [
     date: "Jul 2025",
     event: "Partly × WDCC Hackathon",
     description:
-      "Vehicle part identification tool — select parts from multiple angles for backend condition analysis.",
+      "PartScanner is a vehicle assessment tool built with Tkinter for vehicle part identification. It allows users to select parts of the vehicle from different angles and those data are sent to a backend server provided by Partly for analysis. The tool then provides feedback on the condition of the parts, helping users to identify potential issues.",
     tags: ["Python", "Tkinter"],
     github: null,
     accent: "#f97316",
@@ -151,8 +151,8 @@ const hackathonProjects = [
     date: "Apr 2024",
     event: "SESA × WDCC Hackathon",
     description:
-      "Alien food delivery with Tinder-style swiping under the 'Escape from Earth' hackathon theme.",
-    tags: ["JavaScript", "HTML / CSS"],
+      "SpacePlates is a vanilla based food delivery platform to help aliens across different planets under the 2024 SESA x WDCC Hackathon theme 'Escape from Earth'. It contains a Tinder like swiping system for users to select their preferred food options, for aliens to find their ideal food quickly, including ordering and payment system.",
+    tags: ["HTML / CSS", "JavaScript"],
     github: "https://github.com/saikam2003/wdcc-team-teletubbies",
     accent: "#818cf8",
   },
@@ -489,7 +489,7 @@ export default function Projects() {
         {/* ── Live projects — three cards in a row ──────────────────── */}
         <div className="flex flex-row items-center gap-5 px-10 py-10">
           {mainProjects.map((project) => (
-            <div key={project.title} className="flex-shrink-0 w-[28vw] max-w-[460px] h-[460px] py-2 flex flex-col">
+            <div key={project.title} className="flex-shrink-0 w-[28vw] max-w-[460px] h-[480px] py-2 flex flex-col">
               <BrowserCard project={project} />
             </div>
           ))}
@@ -519,7 +519,7 @@ export default function Projects() {
         </div>
 
         {/* ── Hackathon — two cards stacked top & bottom ────────────── */}
-        <div className="flex-shrink-0 w-[32vw] max-w-[600px] flex flex-col justify-center gap-6 pl-8 pr-10 py-10">
+        <div className="flex-shrink-0 w-[42vw] max-w-[700px] min-w-[500px] flex flex-col justify-center gap-6 pl-8 pr-10 py-10">
           {hackathonProjects.map((project) => (
             <HackathonCard key={project.title} project={project} />
           ))}
