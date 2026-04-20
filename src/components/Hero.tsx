@@ -34,7 +34,7 @@ function useTypewriter(words: string[], speed = 80, pause = 1800) {
   return display;
 }
 
-/* ─── Social icons ──────────────────────────────────────────────────── */
+/* ─── Social links ──────────────────────────────────────────────────── */
 
 const socials = [
   {
@@ -48,30 +48,10 @@ const socials = [
   },
   {
     label: "LinkedIn",
-    href: "https://linkedin.com/in/violet-chen",
+    href: "https://www.linkedin.com/in/violet-chen-dev",
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
         <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-      </svg>
-    ),
-  },
-  {
-    label: "Email",
-    href: "mailto:violetchenbusiness@gmail.com",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
-        <rect width="20" height="16" x="2" y="4" rx="2" />
-        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-      </svg>
-    ),
-  },
-  {
-    label: "Website",
-    href: "https://www.violetchen.dev",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
       </svg>
     ),
   },
@@ -154,21 +134,37 @@ export default function Hero() {
     );
     if (!allLetters.length) return;
 
+    let reassembleTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const triggerReassemble = () => {
+      gsap.to(allLetters, {
+        x: 0, y: 0, rotation: 0, opacity: 1,
+        duration: 0.7, ease: "power3.out",
+        stagger: { amount: 0.4, from: "random" },
+        overwrite: true,
+      });
+      if (badgeRef.current)  gsap.to(badgeRef.current,  { opacity: 1, duration: 0.5, overwrite: true });
+      if (scrollBtn.current) gsap.to(scrollBtn.current, { opacity: 1, duration: 0.5, overwrite: true });
+      if (bottomRef.current) gsap.to(bottomRef.current, { opacity: 1, y: 0, duration: 0.5, overwrite: true });
+    };
+
     const update = (scrollPos: number, viewSize: number) => {
       const progress = Math.min(Math.max(scrollPos / viewSize, 0), 1);
 
       if (progress < 0.01) {
-        // Smoothly reassemble letters when scrolled back to hero
-        gsap.to(allLetters, {
-          x: 0, y: 0, rotation: 0, opacity: 1,
-          duration: 0.7, ease: "power3.out",
-          stagger: { amount: 0.4, from: "random" },
-          overwrite: true,
-        });
-        if (badgeRef.current)  gsap.to(badgeRef.current,  { opacity: 1, duration: 0.5, overwrite: true });
-        if (scrollBtn.current) gsap.to(scrollBtn.current, { opacity: 1, duration: 0.5, overwrite: true });
-        if (bottomRef.current) gsap.to(bottomRef.current, { opacity: 1, y: 0, duration: 0.5, overwrite: true });
+        if (!reassembleTimer) {
+          reassembleTimer = setTimeout(() => {
+            reassembleTimer = null;
+            triggerReassemble();
+          }, 300);
+        }
         return;
+      }
+
+      // Scrolled away — cancel any pending reassembly
+      if (reassembleTimer) {
+        clearTimeout(reassembleTimer);
+        reassembleTimer = null;
       }
 
       // Forward explosion — unchanged
@@ -196,11 +192,11 @@ export default function Hero() {
       if (!container) return;
       const onScroll = () => update(container.scrollLeft, window.innerWidth);
       container.addEventListener("scroll", onScroll, { passive: true });
-      return () => container.removeEventListener("scroll", onScroll);
+      return () => { container.removeEventListener("scroll", onScroll); if (reassembleTimer) clearTimeout(reassembleTimer); };
     } else {
       const onScroll = () => update(window.scrollY, window.innerHeight * 0.6);
       window.addEventListener("scroll", onScroll, { passive: true });
-      return () => window.removeEventListener("scroll", onScroll);
+      return () => { window.removeEventListener("scroll", onScroll); if (reassembleTimer) clearTimeout(reassembleTimer); };
     }
   }, [isHorizontal, containerRef]);
 
@@ -323,49 +319,43 @@ export default function Hero() {
           </div>
 
           {/* Tagline */}
-          <p className="text-sm sm:text-base text-[#8892a4] max-w-md mb-9 [@media(max-height:700px)]:mb-4 leading-relaxed tracking-wide">
+          <p className="text-sm sm:text-base text-[#8892a4] max-w-md mx-auto mb-9 [@media(max-height:700px)]:mb-4 leading-relaxed tracking-wide text-center">
             CS graduate from University of Auckland building real products
             for real people — fast, polished, and production-ready.
           </p>
 
           {/* CTA buttons */}
-          <div className="flex flex-wrap gap-4 mb-10 [@media(max-height:700px)]:mb-4 justify-center">
-            <a
-              href="/Resume.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-7 py-3 rounded-xl bg-[#6d5ef5] hover:bg-[#5d4ee5] text-white text-sm font-semibold tracking-wide transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-[#7c6af7]/40 cursor-pointer"
-            >
-              View Resume
-            </a>
-            <button
-              onClick={() => {
-                const el = document.getElementById("contact");
-                if (!el) return;
-                isHorizontal
-                  ? el.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" })
-                  : el.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
-              className="px-7 py-3 rounded-xl border border-[#2a2a45] hover:border-[#7c6af7]/60 text-[#94a3b8] hover:text-[#c4b5fd] text-sm font-semibold tracking-wide transition-all duration-200 hover:scale-105 glass cursor-pointer"
-            >
-              Get in Touch
-            </button>
-          </div>
-
-          {/* Social links */}
-          <div className="flex gap-5 justify-center">
-            {socials.map(({ label, href, icon }) => (
+          <div className="flex flex-col items-center gap-4 mb-10 [@media(max-height:700px)]:mb-4">
+            <div className="flex gap-4">
               <a
-                key={label}
-                href={href}
+                href="/Resume.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={label}
-                className="flex items-center justify-center w-10 h-10 rounded-xl border border-[#1e1e2e] text-[#6b7280] hover:text-[#a78bfa] hover:border-[#7c6af7]/40 transition-all duration-200 hover:scale-110 glass"
+                className="px-7 py-3 rounded-xl bg-[#6d5ef5] hover:bg-[#5d4ee5] text-white text-sm font-semibold tracking-wide transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-[#7c6af7]/40 cursor-pointer"
               >
-                {icon}
+                View Resume
               </a>
-            ))}
+              <a
+                href="mailto:violetchenbusiness@gmail.com"
+                className="px-7 py-3 rounded-xl border border-[#2a2a45] hover:border-[#7c6af7]/60 text-[#94a3b8] hover:text-[#c4b5fd] text-sm font-semibold tracking-wide transition-all duration-200 hover:scale-105 glass cursor-pointer"
+              >
+                Get in Touch
+              </a>
+            </div>
+            <div className="flex gap-3">
+              {socials.map(({ label, href, icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="flex items-center justify-center w-10 h-10 rounded-xl border border-[#1e1e2e] text-[#6b7280] hover:text-[#a78bfa] hover:border-[#7c6af7]/40 transition-all duration-200 hover:scale-110 glass"
+                >
+                  {icon}
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </div>
