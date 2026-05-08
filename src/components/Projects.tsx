@@ -129,13 +129,23 @@ const mainProjects = [
       "Rainbow Engineering is an information website made for the club Rainbow Engineering at the University of Auckland. Managed and built through the Web Development and Consulting Club. The website provides a platform for the club to manage registrations and share information about the events. It supports users to sign up for events from a Google Form and clients to edit website content through Payload CMS.",
     tags: ["Next.js", "Payload CMS", "MongoDB", "Full-Stack"],
     image: "/RainbowEngineering.png",
-    accent: "#a78bfa",
-    border: "rgba(167,139,250,0.35)",
-    glow: "rgba(167,139,250,0.14)",
+    accent: "#f472b6",
+    border: "rgba(244,114,182,0.35)",
+    glow: "rgba(244,114,182,0.14)",
   },
 ];
 
 const hackathonProjects = [
+  {
+    title: "Quater",
+    date: "Apr 2026",
+    event: "WEB3UOA Hackathon",
+    description:
+      "Quater is an AI-powered marketplace that lets users purchase real-world products using stablecoins. Instead of relying on a single store, Quater searches and aggregates products from across the internet, helping users discover the best options available. Its built-in AI assistant compares price, quality, and value in real time to deliver smarter, more reliable recommendations.",
+    tags: ["Next.js", "TypeScript", "AI", "Web3"],
+    github: "https://github.com/stuutzer/ATLUniEsportsClub",
+    accent: "#10b981",
+  },
   {
     title: "PartScanner",
     date: "Jul 2025",
@@ -224,27 +234,46 @@ function BrowserCard({ project }: { project: typeof mainProjects[0] }) {
 /* ─── Hackathon card ────────────────────────────────────────────────── */
 
 function HackathonCard({ project }: { project: typeof hackathonProjects[0] }) {
+  const Tag = project.github ? motion.a : motion.div;
+  const linkProps = project.github
+    ? { href: project.github, target: "_blank", rel: "noopener noreferrer" }
+    : {};
   return (
-    <ScrollFade>
-      <motion.div
-        whileHover={{ borderColor: `${project.accent}50` }}
-        className="rounded-xl border border-white/[0.07] bg-[#0e0e1a]/80 backdrop-blur-sm p-5 transition-colors"
+    <ScrollFade className="h-full">
+      <Tag
+        {...linkProps}
+        whileHover={{ y: -5, boxShadow: `0 0 36px 3px ${project.accent}18`, borderColor: `${project.accent}50` }}
+        transition={{ duration: 0.18 }}
+        className={`rounded-2xl border border-white/[0.07] bg-[#0e0e1a]/80 backdrop-blur-sm overflow-hidden h-full flex flex-col${project.github ? " cursor-pointer" : ""}`}
       >
-        {/* Header */}
-        <div className="flex items-start justify-between mb-3">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: project.accent }} />
-              <h4 className="text-sm font-semibold text-[#e2e8f0]">{project.title}</h4>
-            </div>
-            <p className="text-[11px] text-[#4b5563] font-mono">{project.event} · {project.date}</p>
-          </div>
+        {/* ── Accent banner ── */}
+        <div
+          className="relative flex-shrink-0 flex flex-col items-center justify-center overflow-hidden"
+          style={{ height: 170, background: `linear-gradient(135deg, ${project.accent}20 0%, ${project.accent}07 100%)` }}
+        >
+          {/* Grid texture */}
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `linear-gradient(${project.accent}18 1px, transparent 1px), linear-gradient(90deg, ${project.accent}18 1px, transparent 1px)`,
+              backgroundSize: "32px 32px",
+            }}
+          />
+          {/* Faded watermark — club/event name */}
+          <span
+            className="absolute inset-0 flex items-center justify-center text-7xl font-black leading-none select-none pointer-events-none tracking-tighter text-center px-4"
+            style={{ color: project.accent, opacity: 0.1 }}
+          >
+            {project.event.replace(" Hackathon", "")}
+          </span>
+          {/* GitHub link */}
           {project.github && (
             <a
               href={project.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#4b5563] hover:text-[#a78bfa] transition-colors flex-shrink-0 ml-2"
+              className="absolute top-3 right-3 transition-opacity opacity-40 hover:opacity-100"
+              style={{ color: project.accent }}
             >
               <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                 <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
@@ -253,21 +282,25 @@ function HackathonCard({ project }: { project: typeof hackathonProjects[0] }) {
           )}
         </div>
 
-        <p className="text-xs text-[#6b7280] leading-relaxed mb-3">{project.description}</p>
-
-        <div className="flex flex-wrap gap-1.5">
-          {project.tags.map((tag) => (
-            <SkillSpan
-              key={tag}
-              skill={tag}
-              className="px-2 py-0.5 rounded-full text-[10px] font-medium border"
-              style={{ color: project.accent, borderColor: `${project.accent}30`, background: `${project.accent}0d` }}
-            >
-              {tag}
-            </SkillSpan>
-          ))}
+        {/* ── Body ── */}
+        <div className="flex flex-col flex-1 p-5">
+          <h4 className="text-xl font-bold text-[#e2e8f0] leading-tight mb-1">{project.title}</h4>
+          <p className="text-[11px] font-mono mb-4" style={{ color: `${project.accent}99` }}>{project.date}</p>
+          <p className="text-xs text-[#6b7280] leading-relaxed flex-1 mb-4">{project.description}</p>
+          <div className="flex flex-wrap gap-1.5">
+            {project.tags.map((tag) => (
+              <SkillSpan
+                key={tag}
+                skill={tag}
+                className="px-2 py-0.5 rounded-full text-[10px] font-medium border"
+                style={{ color: project.accent, borderColor: `${project.accent}30`, background: `${project.accent}0d` }}
+              >
+                {tag}
+              </SkillSpan>
+            ))}
+          </div>
         </div>
-      </motion.div>
+      </Tag>
     </ScrollFade>
   );
 }
@@ -439,7 +472,6 @@ export default function Projects() {
           <h2 className="text-4xl font-bold text-[#e2e8f0] leading-tight mb-2">
             Things I&apos;ve built.
           </h2>
-          <p className="text-[#6b7280] text-base">Real products, shipped and used by real people.</p>
         </div>
 
         {/* Live projects */}
@@ -518,10 +550,12 @@ export default function Projects() {
           </ScrollFade>
         </div>
 
-        {/* ── Hackathon — two cards stacked top & bottom ────────────── */}
-        <div className="flex-shrink-0 w-[42vw] max-w-[700px] min-w-[500px] flex flex-col justify-center gap-6 pl-8 pr-10 py-10">
+        {/* ── Hackathon — two cards side by side ────────────────────── */}
+        <div className="flex-shrink-0 flex flex-row items-center gap-5 pl-8 pr-10 py-10">
           {hackathonProjects.map((project) => (
-            <HackathonCard key={project.title} project={project} />
+            <div key={project.title} className="flex-shrink-0 w-[22vw] max-w-[360px] min-w-[260px] h-[480px] py-2 flex flex-col">
+              <HackathonCard project={project} />
+            </div>
           ))}
         </div>
 

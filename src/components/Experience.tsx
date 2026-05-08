@@ -114,11 +114,6 @@ export default function Experience() {
               Where I've worked.
             </MagneticText>
           </ScrollFade>
-          <ScrollFade yOffset={20}>
-            <p className="text-[#6b7280] text-base leading-relaxed">
-              Building real things, solving real problems.
-            </p>
-          </ScrollFade>
         </div>
 
         {/* ── Timeline ─────────────────────────────────────────────── */}
