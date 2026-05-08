@@ -59,7 +59,7 @@ export default function Contact() {
         <ScrollFade yOffset={20}>
           <p className="text-[#94a3b8] text-base leading-relaxed mb-12">
             Whether you&apos;re looking for a developer, want to collaborate on a project, or just
-            want to say hi — my inbox is always open.
+            want to say hi, my inbox is always open.
           </p>
         </ScrollFade>
 

@@ -6,7 +6,7 @@ import { useHScroll } from "./HScrollContext";
 
 /* ─── Typewriter ────────────────────────────────────────────────────── */
 
-const roles = ["Full-Stack Developer", "Next.js Engineer", "TypeScript Enthusiast"];
+const roles = ["Junior Developer", "Data Administrator", "Team Leader"];
 
 function useTypewriter(words: string[], speed = 80, pause = 1800) {
   const [display, setDisplay] = useState("");
@@ -320,8 +320,8 @@ export default function Hero() {
 
           {/* Tagline */}
           <p className="text-sm sm:text-base text-[#8892a4] max-w-md mx-auto mb-9 [@media(max-height:700px)]:mb-4 leading-relaxed tracking-wide text-center">
-            CS graduate from University of Auckland building real products
-            for real people — fast, polished, and production-ready.
+            I'm a CS and IT graduate from University of Auckland, building real products
+            for real people.
           </p>
 
           {/* CTA buttons */}
