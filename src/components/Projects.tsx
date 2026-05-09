@@ -513,7 +513,7 @@ export default function Projects() {
           </ScrollFade>
           <ScrollFade yOffset={20}>
             <p className="text-[#6b7280] text-base leading-relaxed">
-              Real products, shipped and used by real people.
+              Click on any projects to view them live.
             </p>
           </ScrollFade>
         </div>

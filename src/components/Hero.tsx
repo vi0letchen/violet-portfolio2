@@ -321,7 +321,7 @@ export default function Hero() {
           {/* Tagline */}
           <p className="text-sm sm:text-base text-[#8892a4] max-w-md mx-auto mb-9 [@media(max-height:700px)]:mb-4 leading-relaxed tracking-wide text-center">
             I'm a CS and IT graduate from University of Auckland, building real products
-            for real people.
+            for real users.
           </p>
 
           {/* CTA buttons */}
