@@ -40,9 +40,9 @@ export default function About() {
           <div>
             <ScrollFade>
               <p className="text-[#94a3b8] text-base leading-relaxed mb-5">
-                I&apos;m passionate about putting my skills into products that actually help our community.
                 I'm currently volunteering as a Junior Developer where I build
-                full-stack web applications for UoA clubs.
+                full-stack web applications for UoA clubs. 
+                I truly enjoy the entire development process, from brainstorming, design, coding, problem solving, to deployment.
               </p>
             </ScrollFade>
             <ScrollFade>

@@ -134,38 +134,9 @@ export default function Hero() {
     );
     if (!allLetters.length) return;
 
-    let reassembleTimer: ReturnType<typeof setTimeout> | null = null;
-
-    const triggerReassemble = () => {
-      gsap.to(allLetters, {
-        x: 0, y: 0, rotation: 0, opacity: 1,
-        duration: 0.7, ease: "power3.out",
-        stagger: { amount: 0.4, from: "random" },
-        overwrite: true,
-      });
-      if (badgeRef.current)  gsap.to(badgeRef.current,  { opacity: 1, duration: 0.5, overwrite: true });
-      if (scrollBtn.current) gsap.to(scrollBtn.current, { opacity: 1, duration: 0.5, overwrite: true });
-      if (bottomRef.current) gsap.to(bottomRef.current, { opacity: 1, y: 0, duration: 0.5, overwrite: true });
-    };
-
     const update = (scrollPos: number, viewSize: number) => {
-      const progress = Math.min(Math.max(scrollPos / viewSize, 0), 1);
-
-      if (progress < 0.01) {
-        if (!reassembleTimer) {
-          reassembleTimer = setTimeout(() => {
-            reassembleTimer = null;
-            triggerReassemble();
-          }, 300);
-        }
-        return;
-      }
-
-      // Scrolled away — cancel any pending reassembly
-      if (reassembleTimer) {
-        clearTimeout(reassembleTimer);
-        reassembleTimer = null;
-      }
+      const buffer = viewSize * 0.01;
+      const progress = Math.min(Math.max((scrollPos - buffer) / (viewSize - buffer), 0), 1);
 
       // Forward explosion — unchanged
       allLetters.forEach((el, i) => {
@@ -192,11 +163,11 @@ export default function Hero() {
       if (!container) return;
       const onScroll = () => update(container.scrollLeft, window.innerWidth);
       container.addEventListener("scroll", onScroll, { passive: true });
-      return () => { container.removeEventListener("scroll", onScroll); if (reassembleTimer) clearTimeout(reassembleTimer); };
+      return () => container.removeEventListener("scroll", onScroll);
     } else {
       const onScroll = () => update(window.scrollY, window.innerHeight * 0.6);
       window.addEventListener("scroll", onScroll, { passive: true });
-      return () => { window.removeEventListener("scroll", onScroll); if (reassembleTimer) clearTimeout(reassembleTimer); };
+      return () => window.removeEventListener("scroll", onScroll);
     }
   }, [isHorizontal, containerRef]);
 
