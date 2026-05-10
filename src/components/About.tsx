@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Zap, Users, Shuffle, Clock, ScanSearch } from "lucide-react";
+import { Zap, Users, Shuffle, Clock, ScanSearch, Lightbulb } from "lucide-react";
 import SectionWrapper from "./SectionWrapper";
 import ScrollFade from "./ScrollFade";
 import MagneticText from "./MagneticText";
@@ -13,6 +13,7 @@ const strengths: { icon: LucideIcon; color: string; label: string }[] = [
   { icon: Shuffle,    color: "#34d399", label: "Adaptability"        },
   { icon: Clock,      color: "#7c6af7", label: "Time Management"     },
   { icon: ScanSearch, color: "#06b6d4", label: "Attention to Detail" },
+  { icon: Lightbulb,  color: "#f472b6", label: "Problem Solving"     },
 ];
 
 export default function About() {
@@ -64,20 +65,15 @@ export default function About() {
             {strengths.map(({ icon: Icon, color, label }) => (
               <ScrollFade key={label}>
                 <motion.div
-                  whileHover={{ scale: 1.04, borderColor: "rgba(124,106,247,0.5)" }}
-                  className="flex flex-col items-center gap-3 p-5 rounded-2xl glass border border-[#1e1e2e] cursor-default transition-colors h-full"
+                  whileHover={{ borderColor: "rgba(124,106,247,0.5)" }}
+                  transition={{ duration: 0.1 }}
+                  className="flex flex-col items-center gap-3 p-5 rounded-2xl glass border border-[#1e1e2e] cursor-default h-full"
                 >
                   <Icon size={28} color={color} strokeWidth={1.6} />
                   <span className="text-xs font-medium text-[#94a3b8] text-center">{label}</span>
                 </motion.div>
               </ScrollFade>
             ))}
-            <ScrollFade className="col-span-2 sm:col-span-1">
-              <div className="flex flex-col items-center justify-center gap-2 p-5 rounded-2xl bg-[#7c6af7]/10 border border-[#7c6af7]/30 h-full">
-                <span className="text-2xl font-bold gradient-text">UoA</span>
-                <span className="text-xs text-[#6b7280] text-center">CS + ITM<br />Graduate 2025</span>
-              </div>
-            </ScrollFade>
           </div>
         </div>
 
